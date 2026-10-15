@@ -135,6 +135,25 @@ export async function getAdminStats(params: { from?: string; to?: string; userId
     return await apiRequest<AdminStats>(`/api/admin/stats${query.size ? `?${query}` : ""}`);
 }
 
+export type HistoricalBilling = {
+    status: "candidate" | "unknown";
+    amount: string | null;
+    currency: "USD" | "CNY" | null;
+    source: { name: string; sha256: string; row: number } | null;
+    actualConfirmedAmount: null;
+    operation: "generation" | "edit" | "image_operation_unknown_task_missing";
+    referenceCount: number | null;
+    imageCount: number | null;
+    size: string | null;
+    quality: string | null;
+    timeDifferenceSeconds: number | null;
+};
+
+export type BillingHistorySummary = {
+    importId: string; importedAt: string; snapshotAt: string; matchingMethod: string; importedCount: number;
+    candidateCount: number; unknownCount: number; candidateTotals: { USD: string; CNY: string };
+};
+
 export type RequestLog = {
     id: string;
     userId: string | null;
@@ -157,11 +176,12 @@ export type RequestLog = {
     startedAt: string;
     finishedAt: string | null;
     durationMs: number | null;
+    historicalBilling?: HistoricalBilling;
 };
 
-export async function getAdminRequestLogs(params: { from?: string; to?: string; userId?: string; modelId?: string; channelId?: string; type?: RequestLog["type"]; status?: RequestLog["status"]; limit?: number; offset?: number }) {
+export async function getAdminRequestLogs(params: { from?: string; to?: string; userId?: string; modelId?: string; channelId?: string; type?: RequestLog["type"]; status?: RequestLog["status"]; reconciliation?: HistoricalBilling["status"]; limit?: number; offset?: number }, history = false) {
     const query = serializeApiParams(params);
-    return await apiRequest<{ logs: RequestLog[]; total: number }>(`/api/admin/request-logs${query.size ? `?${query}` : ""}`);
+    return await apiRequest<{ logs: RequestLog[]; total: number; history?: BillingHistorySummary | null }>(`/api/admin/request-logs${history ? "/history" : ""}${query.size ? `?${query}` : ""}`);
 }
 
 export async function clearAdminRequestLogs() {

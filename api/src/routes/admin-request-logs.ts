@@ -4,6 +4,7 @@ import { z } from "zod";
 import { authenticate } from "../auth/session.js";
 import { db } from "../db/client.js";
 import { requestLogs, users } from "../db/schema.js";
+import { loadBillingHistory, queryBillingHistory } from "../billing-history.js";
 
 const querySchema = z.object({
   from: z.string().datetime({ offset: true }).optional(),
@@ -70,6 +71,16 @@ export async function adminRequestLogRoutes(app: FastifyInstance) {
       .from(requestLogs)
       .where(where);
     return { logs: rows, total: totals?.total ?? 0 };
+  });
+
+  app.get("/history", async (request, reply) => {
+    const query = querySchema.extend({ reconciliation: z.enum(["candidate", "unknown"]).optional() }).parse(request.query);
+    reply.header("Cache-Control", "no-store");
+    try {
+      return queryBillingHistory(loadBillingHistory(), query);
+    } catch {
+      return reply.code(503).send({ error: "billing_history_unavailable", message: "历史账单档案暂不可读，请联系管理员核验导入文件。" });
+    }
   });
 
   app.delete("/", async (request, reply) => {
