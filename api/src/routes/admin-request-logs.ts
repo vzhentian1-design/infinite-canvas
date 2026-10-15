@@ -4,6 +4,7 @@ import { z } from "zod";
 import { authenticate } from "../auth/session.js";
 import { db } from "../db/client.js";
 import { requestLogs, users } from "../db/schema.js";
+import { imageCostEvidence } from "../image-cost.js";
 
 const querySchema = z.object({
   from: z.string().datetime({ offset: true }).optional(),
@@ -55,6 +56,8 @@ export async function adminRequestLogRoutes(app: FastifyInstance) {
         errorCategory: requestLogs.errorCategory,
         errorMessage: requestLogs.errorMessage,
         billedAmount: requestLogs.billedAmount,
+        upstreamRequestId: requestLogs.upstreamRequestId,
+        estimateSnapshot: requestLogs.estimateSnapshot,
         startedAt: requestLogs.startedAt,
         finishedAt: requestLogs.finishedAt,
         durationMs: requestLogs.durationMs,
@@ -69,7 +72,7 @@ export async function adminRequestLogRoutes(app: FastifyInstance) {
       .select({ total: sql<number>`count(*)::int` })
       .from(requestLogs)
       .where(where);
-    return { logs: rows, total: totals?.total ?? 0 };
+    return { logs: rows.map((row) => ({ ...row, ...(row.type === "image" ? imageCostEvidence(row) : {}) })), total: totals?.total ?? 0 };
   });
 
   app.delete("/", async (request, reply) => {

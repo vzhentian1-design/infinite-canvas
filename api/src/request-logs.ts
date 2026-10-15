@@ -18,6 +18,7 @@ export async function finishRequestLog(
   id: string | undefined,
   error?: { httpStatus?: number; category: string; message?: string },
   billedAmount?: string | null,
+  upstreamRequestId?: string,
 ) {
   if (!id) return;
   try {
@@ -27,6 +28,7 @@ export async function finishRequestLog(
         status: error ? "failed" : "succeeded",
         ...(error ? { httpStatus: error.httpStatus ?? null, errorCategory: error.category, errorMessage: error.message ?? null } : {}),
         ...(billedAmount !== undefined ? { billedAmount } : {}),
+        ...(upstreamRequestId ? { upstreamRequestId } : {}),
         finishedAt: new Date(),
         durationMs: sql`extract(epoch from (now() - ${requestLogs.startedAt})) * 1000`,
       })

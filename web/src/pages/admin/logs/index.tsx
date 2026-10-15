@@ -52,7 +52,7 @@ export default function AdminRequestLogsPage() {
         { title: "类型", dataIndex: "type", width: 76, render: (value: RequestLog["type"]) => value === "probe" ? <span className="text-stone-400">{typeLabels[value]}</span> : typeLabels[value] },
         { title: "模型 / 渠道", key: "model", width: 250, ellipsis: true, render: (_, log) => <div><div className="truncate" title={log.modelDisplayNameSnapshot || undefined}>{log.modelDisplayNameSnapshot || <span className="text-stone-400">—</span>}</div><div className="truncate text-xs text-stone-500" title={log.upstreamModel || undefined}>{[log.channelNameSnapshot, log.upstreamModel].filter(Boolean).join(" · ") || "—"}</div></div> },
         { title: "HTTP", dataIndex: "httpStatus", width: 70, render: (value: number | null, log) => value ? <span className={log.status === "failed" ? "text-red-500" : ""}>{value}</span> : <span className="text-stone-300 dark:text-stone-600">—</span> },
-        { title: "费用", key: "cost", width: 110, render: (_, log) => log.billedAmount != null && Number(log.billedAmount) > 0 ? `¥${Number(log.billedAmount).toFixed(2)}` : <span className="text-amber-600">成本待结算</span> },
+        { title: "平台估算 / 供应商扣费", key: "cost", width: 200, render: (_, log) => <div><div>{estimateText(log)}</div><div>供应商扣费未知</div>{log.generationOutcome === "unknown" && <div>结果未知，请先核对再重试</div>}</div> },
         { title: "耗时", key: "duration", width: 130, render: (_, log) => <div className="flex items-center gap-2">{log.durationMs != null && <span className={`h-4 w-[3px] rounded-full ${log.status === "failed" ? "bg-red-400" : "bg-emerald-500"}`} />}<span className={log.durationMs == null ? "text-stone-300 dark:text-stone-600" : ""}>{log.durationMs == null ? "—" : `${(log.durationMs / 1000).toFixed(1)}s`}</span></div> },
         {
             title: "详情",
@@ -108,9 +108,17 @@ function logDetail(log: RequestLog) {
         `模型：${log.modelDisplayNameSnapshot || "—"}${log.modelNameSnapshot ? ` (${log.modelNameSnapshot})` : ""}`,
         `渠道：${log.channelNameSnapshot || "—"}`,
         `上游模型：${log.upstreamModel || "—"}`,
+        `任务编号：${log.taskId || "—"}`,
+        `供应商请求编号：${log.upstreamRequestId || "未记录"}`,
         `HTTP：${log.httpStatus ?? "—"}`,
         `耗时：${log.durationMs == null ? "—" : `${(log.durationMs / 1000).toFixed(1)}s`}`,
-        `费用：${log.billedAmount != null && Number(log.billedAmount) > 0 ? `¥${Number(log.billedAmount).toFixed(2)}` : "成本待结算"}`,
+        `平台估算：${estimateText(log)}（非实际扣费）`,
+        "供应商扣费：未知，尚无可靠账单关联",
         ...(log.errorMessage ? [`错误：[${log.errorCategory || "unknown"}] ${log.errorMessage}`] : []),
     ].join("\n");
+}
+
+function estimateText(log: RequestLog) {
+    const estimate = log.platformEstimate;
+    return estimate ? `估算 ${estimate.currency} ${Number(estimate.amount).toFixed(6).replace(/0+$/, "").replace(/\.$/, "")}` : "估算未配置";
 }

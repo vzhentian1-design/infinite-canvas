@@ -338,6 +338,8 @@ export const requestLogs = pgTable(
     errorCategory: varchar("error_category", { length: 80 }),
     errorMessage: text("error_message"),
     billedAmount: numeric("billed_amount", { precision: 14, scale: 6 }),
+    upstreamRequestId: varchar("upstream_request_id", { length: 200 }),
+    estimateSnapshot: jsonb("estimate_snapshot").$type<{ amount: string; currency: string; source: string }>(),
     startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
     finishedAt: timestamp("finished_at", { withTimezone: true }),
     durationMs: integer("duration_ms"),

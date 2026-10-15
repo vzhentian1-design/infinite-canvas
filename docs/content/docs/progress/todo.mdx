@@ -5,7 +5,7 @@ description: Planned follow-up work
 
 # TODO
 
-- 阶段一后待 Owner 裁决：核对 qidong 凭据与当前售卖模型，再完成受限生图/改图验收；选择 Canvas 或独立 New API 一个路由层实现主备，另行设计积分结算显示与现金成本对账。保持自动付费重试关闭，资产清理等待精确清单确认。
+- 第二阶段阻塞：原 qidong 令牌经 Owner 启用后，鉴权免费检查 HTTP200，但图片目录为空，旧 gpt-image-2-qidong 实际请求 HTTP403；须先确认供应商当前可用 GPT Image 模型/权限与价格。正式路线固定使用 Canvas 企业后端，不迁移 New API。安全调度与估算日志候选见根目录第二阶段 RESULT；待实库验证、受限生图改图、Packy 费用边界裁决及显式发布，才启用主备。供应商实际扣费自动关联与员工费用汇总保留后续独立任务。
 
 - Replace the Claude Code CLI adapter with a Claude Agent SDK adapter and improve the tool queue, following the [Local Agent Integration Plan](/docs/progress/local-agent-integration-plan).
 - Add Skill installation from web search, Skill resource-file management, and controlled local-memory persistence.

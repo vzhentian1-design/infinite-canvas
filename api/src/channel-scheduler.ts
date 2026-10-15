@@ -1,7 +1,7 @@
 import { and, desc, eq, isNotNull, isNull, lt, lte, or } from "drizzle-orm";
 import { decryptSecret } from "./crypto.js";
 import { db } from "./db/client.js";
-import { channels, modelChannels } from "./db/schema.js";
+import { channels, modelChannels, models } from "./db/schema.js";
 
 export type ChannelCandidate = {
   channelId: string;
@@ -15,6 +15,8 @@ export type ChannelCandidate = {
   upstreamModel: string;
   priority: number;
   weight: number;
+  estimateSnapshot?: { amount: string; currency: string; source: string } | null;
+  upstreamRequestId?: string;
 };
 
 export class UpstreamError extends Error {
@@ -68,9 +70,11 @@ export async function getChannelCandidates(modelId: string) {
       upstreamModel: modelChannels.upstreamModel,
       priority: modelChannels.priority,
       weight: modelChannels.weight,
+      modelConfig: models.config,
     })
     .from(modelChannels)
     .innerJoin(channels, eq(channels.id, modelChannels.channelId))
+    .innerJoin(models, eq(models.id, modelChannels.modelId))
     .where(
       and(
         eq(modelChannels.modelId, modelId),
@@ -96,6 +100,7 @@ export async function getChannelCandidates(modelId: string) {
     const candidate: ChannelCandidate = {
       ...row,
       apiKey,
+      estimateSnapshot: channelEstimate(row.modelConfig, row.channelId),
     };
     const group = groups.get(row.priority) ?? [];
     group.push(candidate);
@@ -104,6 +109,14 @@ export async function getChannelCandidates(modelId: string) {
   return [...groups.entries()]
     .sort(([a], [b]) => b - a)
     .flatMap(([, candidates]) => weightedShuffle(candidates));
+}
+
+function channelEstimate(config: unknown, channelId: string): ChannelCandidate["estimateSnapshot"] {
+  const estimates = (config as { channelEstimates?: Record<string, unknown> } | null)?.channelEstimates;
+  const value = estimates?.[channelId] as { amount?: unknown; currency?: unknown; source?: unknown } | undefined;
+  if (!value || typeof value.amount !== "string" || !/^\d{1,8}(\.\d{1,6})?$/.test(value.amount)
+    || !["CNY", "USD"].includes(String(value.currency))) return null;
+  return { amount: value.amount, currency: String(value.currency), source: "platform_channel_estimate" };
 }
 
 /**
@@ -226,6 +239,7 @@ export async function markChannelResult(candidate: ChannelCandidate, error?: Ups
 export async function runWithFailover<T>(
   modelId: string,
   action: (candidate: ChannelCandidate, attempt: number) => Promise<T>,
+  options: { safeImage?: boolean } = {},
 ) {
   const candidates = await getChannelCandidates(modelId);
   if (!candidates.length) throw new UpstreamError("没有可用渠道", "no_channel", undefined, "never");
@@ -234,6 +248,8 @@ export async function runWithFailover<T>(
   let lastError: UpstreamError | undefined;
   let attempt = 0;
   for (let index = 0; index < candidates.length; index += 1) {
+    // One primary and one backup. Never retry a paid image after an ambiguous result.
+    if (options.safeImage && attempt >= 2) break;
     const candidate = candidates[index]!;
     let attempted = false;
     try {
@@ -261,6 +277,7 @@ export async function runWithFailover<T>(
       if (!attempted) await markChannelResult(candidate, upstream);
       if (ambiguousRetryPending && candidate.channelId !== ambiguousSourceChannelId) throw upstream;
       if (upstream.failover === "never") throw upstream;
+      if (options.safeImage && attempted && upstream.httpStatus !== 401) throw upstream;
       if (upstream.failover === "once") {
         ambiguousRetryPending = true;
         ambiguousSourceChannelId = candidate.channelId;

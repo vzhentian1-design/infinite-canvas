@@ -35,9 +35,11 @@ mock.module("../src/generation-worker.ts", { namedExports: { enqueueGenerationTa
 mock.module("../src/media-cleanup.ts", { namedExports: { removeUnreferencedMedia: async () => {} } });
 const { textRoutes } = await import("../src/routes/text.ts");
 const { generationBatchRoutes } = await import("../src/routes/generation-batches.ts");
+const { adminRequestLogRoutes } = await import("../src/routes/admin-request-logs.ts");
 const app = Fastify();
 await app.register(textRoutes, { prefix: "/api/text" });
 await app.register(generationBatchRoutes, { prefix: "/api/generation-batches" });
+await app.register(adminRequestLogRoutes, { prefix: "/api/admin/request-logs" });
 
 beforeEach(async () => {
   await client.exec("truncate users, models, channels cascade");
@@ -51,6 +53,26 @@ beforeEach(async () => {
 });
 after(async () => { await app.close(); await client.close(); });
 const sendText = (input) => app.inject({ method: "POST", url: "/api/text/requests", payload: { modelId: textModelId, content: "question", ...input } });
+
+test("admin logs preserve supplier identity and estimates without treating legacy billing as cash", async () => {
+  await db.insert(schema.requestLogs).values({ userId, type: "image", status: "succeeded", channelNameSnapshot: "primary", upstreamModel: "image", upstreamRequestId: "synthetic-request-id", billedAmount: "999", estimateSnapshot: { amount: "0.03", currency: "CNY", source: "platform_channel_estimate" } });
+  const response = await app.inject({ method: "GET", url: "/api/admin/request-logs" });
+  assert.equal(response.statusCode, 200);
+  const row = response.json().logs[0];
+  assert.equal(row.upstreamRequestId, "synthetic-request-id");
+  assert.equal(row.platformEstimate.amount, "0.03");
+  assert.equal(row.supplierActualAmount, null);
+  assert.equal(row.supplierSettlementStatus, "unknown");
+});
+
+test("ambiguous image failure cannot be retried through the existing endpoint", async () => {
+  const [batch] = await db.insert(schema.generationBatches).values({ userId, modelId: imageModelId, prompt: "test", requestedCount: 1 }).returning();
+  const [task] = await db.insert(schema.generationTasks).values({ batchId: batch.id, userId, modelId: imageModelId, sequence: 0, prompt: "test", status: "failed", errorCode: "http_503" }).returning();
+  const response = await app.inject({ method: "POST", url: `/api/generation-batches/tasks/${task.id}/retry` });
+  assert.equal(response.statusCode, 409);
+  assert.equal(response.json().error, "billing_unknown");
+  assert.equal((await db.select().from(schema.generationTasks).where(eq(schema.generationTasks.id, task.id)))[0].status, "failed");
+});
 
 test("text retries claim the request once and do not duplicate messages", async () => {
   const requestId = randomUUID();

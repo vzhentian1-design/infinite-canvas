@@ -136,6 +136,11 @@ export async function getAdminStats(params: { from?: string; to?: string; userId
 }
 
 export type RequestLog = {
+    upstreamRequestId?: string | null;
+    generationOutcome?: "succeeded" | "failed" | "pending" | "unknown";
+    platformEstimate?: { amount: string; currency: string; source: string } | null;
+    supplierSettlementStatus?: "unknown";
+    supplierActualAmount?: string | null;
     id: string;
     userId: string | null;
     username: string | null;

@@ -84,6 +84,7 @@ async function processTask(taskId: string) {
 
   let activeRequestLogId: string | undefined;
   let activeAttemptId: string | undefined;
+  let activeUpstreamRequestId: string | undefined;
   const failedAttemptWrites: Array<() => PromiseLike<unknown>> = [];
   try {
     const references = await acquireReferences(task.batchId);
@@ -115,8 +116,10 @@ async function processTask(taskId: string) {
           channelId: channel.channelId,
           channelNameSnapshot: channel.channelName,
           upstreamModel: channel.upstreamModel,
+          estimateSnapshot: channel.estimateSnapshot ?? null,
         });
         try {
+          if (!requestLogId) throw new UpstreamError("请求日志不可写，未发送图片请求", "audit_unavailable", undefined, "never");
           const image = await generateImage(
             channel,
             task.prompt,
@@ -126,6 +129,7 @@ async function processTask(taskId: string) {
           const detected = await validateGeneratedImage(image);
           activeRequestLogId = requestLogId;
           activeAttemptId = attempt!.id;
+          activeUpstreamRequestId = channel.upstreamRequestId;
           return { image, detected, startedAt };
         } catch (error) {
           const upstream = error instanceof UpstreamError ? error : new UpstreamError("上游请求失败", "unknown", undefined, "once");
@@ -146,10 +150,10 @@ async function processTask(taskId: string) {
           } catch {
             failedAttemptWrites.push(recordFailure);
           }
-          await finishRequestLog(requestLogId, upstream);
+          await finishRequestLog(requestLogId, upstream, undefined, channel.upstreamRequestId);
           throw upstream;
         }
-      });
+      }, { safeImage: true });
       const { image, detected, startedAt } = generation.result;
       const dimensions = imageSize(image);
       const objectKey = `generated/${task.userId}/${new Date().toISOString().slice(0, 7)}/${randomUUID()}.${detected.ext}`;
@@ -188,7 +192,7 @@ async function processTask(taskId: string) {
             .set({ status: "succeeded", finishedAt })
             .where(eq(generationTasks.id, task.id));
         });
-        await finishRequestLog(activeRequestLogId, undefined, task.priceSnapshot ?? "0");
+        await finishRequestLog(activeRequestLogId, undefined, task.priceSnapshot ?? "0", generation.candidate.upstreamRequestId);
       } catch (error) {
         await minio.removeObject(config.MINIO_BUCKET, objectKey);
         throw error;
@@ -215,7 +219,7 @@ async function processTask(taskId: string) {
         .where(and(eq(generationAttempts.id, activeAttemptId), eq(generationAttempts.status, "running")));
     }
     if (activeRequestLogId) {
-      await finishRequestLog(activeRequestLogId, upstream);
+      await finishRequestLog(activeRequestLogId, upstream, undefined, activeUpstreamRequestId);
     }
   } finally {
     // 任务收口时补记未完成的尝试，记录失败不得改写上游结果或触发额外生成。
@@ -242,7 +246,7 @@ export async function startGenerationWorker() {
   await boss.createQueue(queueName, { name: queueName, policy: "standard" });
   const recovered = await db
     .update(generationTasks)
-    .set({ status: "queued", startedAt: null, errorCode: null, errorMessage: null })
+    .set({ status: "failed", finishedAt: new Date(), errorCode: "worker_restart_unknown", errorMessage: "服务重启，原请求结果及扣费未知；请先核对供应商记录，禁止直接重试" })
     .where(eq(generationTasks.status, "running"))
     .returning({ id: generationTasks.id });
   if (recovered.length) {
@@ -250,8 +254,8 @@ export async function startGenerationWorker() {
       .update(generationAttempts)
       .set({
         status: "failed",
-        errorCategory: "worker_restart",
-        errorMessage: "服务重启，中断的任务已重新排队",
+        errorCategory: "worker_restart_unknown",
+        errorMessage: "服务重启，中断请求结果及扣费未知，未重新派发",
         finishedAt: new Date(),
       })
       .where(
@@ -262,7 +266,7 @@ export async function startGenerationWorker() {
       );
     await db
       .update(requestLogs)
-      .set({ status: "failed", errorCategory: "worker_restart", errorMessage: "服务重启，中断的任务已重新排队", finishedAt: new Date() })
+      .set({ status: "failed", errorCategory: "worker_restart_unknown", errorMessage: "服务重启，中断请求结果及扣费未知，未重新派发", finishedAt: new Date() })
       .where(
         and(
           inArray(requestLogs.taskId, recovered.map((task) => task.id)),

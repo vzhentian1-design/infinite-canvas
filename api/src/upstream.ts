@@ -160,8 +160,15 @@ async function upstreamJson(candidate: ChannelCandidate, url: string, init: Requ
   const timeout = setTimeout(() => controller.abort(), candidate.timeoutMs);
   try {
     const response = await fetch(url, { ...init, signal: controller.signal });
+    const requestId = response.headers.get("x-request-id") ?? response.headers.get("x-oneapi-request-id") ?? response.headers.get("x-upstream-request-id");
+    if (requestId && requestId.length <= 200 && !/[\r\n]/.test(requestId) && !requestId.includes(candidate.apiKey || "\0")) candidate.upstreamRequestId = requestId;
     if (!response.ok) {
-      throw classifyHttp(response.status, await response.text(), candidate.apiKey);
+      const body = await response.text();
+      if (!candidate.upstreamRequestId) {
+        const id = body.match(/request[ _]id["'\s:：]+([a-zA-Z0-9_-]{1,200})/i)?.[1];
+        if (id && !id.includes(candidate.apiKey || "\0")) candidate.upstreamRequestId = id;
+      }
+      throw classifyHttp(response.status, body, candidate.apiKey);
     }
     const payload = await response.json();
     if (hasContentPolicyRefusal(payload)) throw contentPolicyError(response.status);
