@@ -52,7 +52,7 @@ export default function AdminRequestLogsPage() {
         { title: "类型", dataIndex: "type", width: 76, render: (value: RequestLog["type"]) => value === "probe" ? <span className="text-stone-400">{typeLabels[value]}</span> : typeLabels[value] },
         { title: "模型 / 渠道", key: "model", width: 250, ellipsis: true, render: (_, log) => <div><div className="truncate" title={log.modelDisplayNameSnapshot || undefined}>{log.modelDisplayNameSnapshot || <span className="text-stone-400">—</span>}</div><div className="truncate text-xs text-stone-500" title={log.upstreamModel || undefined}>{[log.channelNameSnapshot, log.upstreamModel].filter(Boolean).join(" · ") || "—"}</div></div> },
         { title: "HTTP", dataIndex: "httpStatus", width: 70, render: (value: number | null, log) => value ? <span className={log.status === "failed" ? "text-red-500" : ""}>{value}</span> : <span className="text-stone-300 dark:text-stone-600">—</span> },
-        { title: "费用", key: "cost", width: 90, render: (_, log) => log.billedAmount != null ? `¥${Number(log.billedAmount).toFixed(2)}` : <span className="text-stone-300 dark:text-stone-600">—</span> },
+        { title: "费用", key: "cost", width: 110, render: (_, log) => log.billedAmount != null && Number(log.billedAmount) > 0 ? `¥${Number(log.billedAmount).toFixed(2)}` : <span className="text-amber-600">成本待结算</span> },
         { title: "耗时", key: "duration", width: 130, render: (_, log) => <div className="flex items-center gap-2">{log.durationMs != null && <span className={`h-4 w-[3px] rounded-full ${log.status === "failed" ? "bg-red-400" : "bg-emerald-500"}`} />}<span className={log.durationMs == null ? "text-stone-300 dark:text-stone-600" : ""}>{log.durationMs == null ? "—" : `${(log.durationMs / 1000).toFixed(1)}s`}</span></div> },
         {
             title: "详情",
@@ -110,7 +110,7 @@ function logDetail(log: RequestLog) {
         `上游模型：${log.upstreamModel || "—"}`,
         `HTTP：${log.httpStatus ?? "—"}`,
         `耗时：${log.durationMs == null ? "—" : `${(log.durationMs / 1000).toFixed(1)}s`}`,
-        `费用：${log.billedAmount != null ? `¥${Number(log.billedAmount).toFixed(2)}` : "—"}`,
+        `费用：${log.billedAmount != null && Number(log.billedAmount) > 0 ? `¥${Number(log.billedAmount).toFixed(2)}` : "成本待结算"}`,
         ...(log.errorMessage ? [`错误：[${log.errorCategory || "unknown"}] ${log.errorMessage}`] : []),
     ].join("\n");
 }

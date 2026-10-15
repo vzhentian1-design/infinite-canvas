@@ -77,6 +77,8 @@ export type ChannelCredentialsImportResult = {
 };
 
 export const CONFIG_STORE_KEY = "infinite-canvas:ai_config_store";
+export const EMPLOYEE_PRESET_VERSION = 1;
+export const EMPLOYEE_DEFAULT_IMAGE_MODEL = "gpt-image-2-qidong";
 const CHANNEL_MODEL_SEPARATOR = "::";
 const PLATFORM_CHANNEL_ID = "platform";
 const OPENAI_BASE_URL = "https://api.openai.com";
@@ -97,6 +99,7 @@ export const defaultConfig: AiConfig = {
             apiKey: "",
             apiFormat: "openai",
             models: [
+                { name: EMPLOYEE_DEFAULT_IMAGE_MODEL, capability: "image" },
                 { name: "gpt-image-2.5-flare", capability: "image" },
                 { name: "gpt-image-2.5-sunburst", capability: "image" },
                 { name: "gpt-image-2", capability: "image" },
@@ -106,8 +109,8 @@ export const defaultConfig: AiConfig = {
             ],
         },
     ],
-    model: "default::gpt-image-2.5-flare",
-    imageModel: "default::gpt-image-2.5-flare",
+    model: `default::${EMPLOYEE_DEFAULT_IMAGE_MODEL}`,
+    imageModel: `default::${EMPLOYEE_DEFAULT_IMAGE_MODEL}`,
     videoModel: "default::grok-imagine-video",
     textModel: "default::gpt-5.5",
     audioModel: "default::gpt-4o-mini-tts",
@@ -122,12 +125,12 @@ export const defaultConfig: AiConfig = {
     videoMode: "frames",
     systemPrompt: "",
     reasoningEffort: "auto",
-    models: ["default::gpt-image-2.5-flare", "default::gpt-image-2.5-sunburst", "default::gpt-image-2", "default::grok-imagine-video", "default::gpt-5.5", "default::gpt-4o-mini-tts"],
+    models: [`default::${EMPLOYEE_DEFAULT_IMAGE_MODEL}`, "default::gpt-image-2.5-flare", "default::gpt-image-2.5-sunburst", "default::gpt-image-2", "default::grok-imagine-video", "default::gpt-5.5", "default::gpt-4o-mini-tts"],
     quality: "auto",
-    size: "1:1",
+    size: "3:4",
     background: "",
     count: "1",
-    canvasImageCount: "3",
+    canvasImageCount: "1",
     proxyEnabled: false,
     proxyUrl: DEFAULT_LOCAL_PROXY_URL,
 };
@@ -223,9 +226,12 @@ function platformConfig(config: AiConfig, models: PublicModel[]): AiConfig {
     // same upstream model), while the display name remains user-facing.
     const platformModels = models.map((model) => ({ ...model, name: model.id }));
     const channel = createModelChannel({ id: PLATFORM_CHANNEL_ID, name: "平台模型", baseUrl: "", apiKey: "", models: platformModels });
-    const imageModel = platformModels.find((model) => model.capability === "image");
+    const currentImageModel = modelOptionName(config.imageModel);
+    const imageModel = models.find((model) => model.capability === "image" && (model.id === currentImageModel || model.name === currentImageModel || model.displayName === currentImageModel))
+        || models.find((model) => model.capability === "image" && model.name === EMPLOYEE_DEFAULT_IMAGE_MODEL)
+        || models.find((model) => model.capability === "image");
     const textModel = platformModels.find((model) => model.capability === "text");
-    const imageValue = imageModel ? encodeChannelModel(channel.id, imageModel.name) : "";
+    const imageValue = imageModel ? encodeChannelModel(channel.id, imageModel.id) : config.imageModel;
     const textValue = textModel ? encodeChannelModel(channel.id, textModel.name) : "";
     return {
         ...config,
@@ -283,6 +289,7 @@ export const useConfigStore = create<ConfigStore>()(
             partialize: (state) => ({
                 config: {
                     quality: state.config.quality,
+                    imageModel: state.config.imageModel,
                     size: state.config.size,
                     background: state.config.background,
                     count: state.config.count,
@@ -310,6 +317,7 @@ export const useConfigStore = create<ConfigStore>()(
                     config: {
                         ...defaults,
                         quality: persistedConfig.quality ?? defaults.quality,
+                        imageModel: persistedConfig.imageModel ?? defaults.imageModel,
                         size: persistedConfig.size ?? defaults.size,
                         background: persistedConfig.background ?? defaults.background,
                         count: persistedConfig.count ?? defaults.count,
@@ -325,6 +333,21 @@ export const useConfigStore = create<ConfigStore>()(
                         proxyUrl: persistedConfig.proxyUrl ?? defaults.proxyUrl,
                     },
                 };
+            },
+            version: EMPLOYEE_PRESET_VERSION,
+            migrate: (persisted, version) => {
+                if (version >= EMPLOYEE_PRESET_VERSION) return persisted as ConfigStore;
+                const state = (persisted || {}) as Partial<ConfigStore>;
+                return {
+                    ...state,
+                    config: {
+                        ...(state.config || {}),
+                        imageModel: defaultConfig.imageModel,
+                        size: defaultConfig.size,
+                        count: defaultConfig.count,
+                        canvasImageCount: defaultConfig.canvasImageCount,
+                    },
+                } as ConfigStore;
             },
         },
     ),

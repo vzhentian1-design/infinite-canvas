@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight, BookOpen, CheckSquare, ClipboardPaste, Download, FolderPlus, History, ImagePlus, LoaderCircle, PenLine, Plus, RefreshCw, SlidersHorizontal, Sparkles, Trash2, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { App, Button, Checkbox, Drawer, Empty, Image, Input, Select, Tag, Tooltip, Typography } from "antd";
+import { Alert, App, Button, Checkbox, Drawer, Empty, Image, Input, Segmented, Select, Tag, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
 import { useLocation } from "react-router-dom";
@@ -12,7 +12,7 @@ import { AssetPickerModal, type InsertAssetPayload } from "@/components/canvas/a
 import { canvasThemes } from "@/lib/canvas-theme";
 import { imageReferenceLabel } from "@/lib/image-reference-prompt";
 import { createZip } from "@/lib/zip";
-import { modelOptionName, useConfigStore, useEffectiveConfig, type AiConfig } from "@/stores/use-config-store";
+import { EMPLOYEE_DEFAULT_IMAGE_MODEL, EMPLOYEE_PRESET_VERSION, encodeChannelModel, modelOptionName, useConfigStore, useEffectiveConfig, type AiConfig } from "@/stores/use-config-store";
 import { useThemeStore } from "@/stores/use-theme-store";
 import { nanoid } from "nanoid";
 import { formatBytes, formatDuration } from "@/lib/image-utils";
@@ -25,6 +25,7 @@ import { useWorkbenchAgentStore } from "@/stores/use-workbench-agent-store";
 import { assertCurrentSession, useUserStore } from "@/stores/use-user-store";
 import type { ReferenceImage } from "@/types/image";
 import i18n from "@/i18n";
+import { composeQuickRepairPrompt, type QuickRepairOption } from "./quick-repair";
 
 type GeneratedImage = {
     id: string;
@@ -40,6 +41,19 @@ type GeneratedImage = {
 type GenerationResult = {
     id: string;
     status: "queued" | "running" | "reviewing" | "success" | "failed";
+    image?: GeneratedImage;
+    error?: string;
+};
+
+type WorkbenchMode = "normal" | "batch-repair";
+
+type BatchRepairItem = {
+    id: string;
+    reference: ReferenceImage;
+    status: "waiting" | "queued" | "running" | "success" | "failed";
+    batchId?: string;
+    taskId?: string;
+    model?: string;
     image?: GeneratedImage;
     error?: string;
 };
@@ -73,6 +87,8 @@ type UpdateAiConfig = <K extends keyof AiConfig>(key: K, value: AiConfig[K]) => 
 
 const RESULT_ACTION_BUTTON_CLASS = "min-w-0 px-1.5 [&_.ant-btn-icon]:shrink-0 [&>span:last-child]:min-w-0 [&>span:last-child]:truncate";
 const SUPPORTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+const BATCH_REPAIR_MIN_IMAGES = 2;
+const BATCH_REPAIR_MAX_IMAGES = 10;
 
 export default function ImagePage() {
     const { message, modal } = App.useApp();
@@ -90,7 +106,12 @@ export default function ImagePage() {
     const [modelId, setModelId] = useState(remixState?.modelId || "");
     const [initialized, setInitialized] = useState(false);
     const [prompt, setPrompt] = useState(remixState?.prompt || "");
+    const [mode, setMode] = useState<WorkbenchMode>("normal");
+    const [quickRepairs, setQuickRepairs] = useState<QuickRepairOption[]>([]);
+    const [lastGenerationError, setLastGenerationError] = useState<{ model: string; detail: string } | null>(null);
     const [references, setReferences] = useState<ReferenceImage[]>([]);
+    const [batchReferences, setBatchReferences] = useState<ReferenceImage[]>([]);
+    const [batchRepairItems, setBatchRepairItems] = useState<BatchRepairItem[]>([]);
     const [results, setResults] = useState<GenerationResult[]>([]);
     const [logs, setLogs] = useState<GenerationLog[]>([]);
     const [activeBatchIds, setActiveBatchIds] = useState<string[]>([]);
@@ -98,6 +119,7 @@ export default function ImagePage() {
     const previewLogIdRef = useRef("");
     const agentTasksRef = useRef(new Map<string, string>());
     const watchedBatchesRef = useRef(new Set<string>());
+    const batchRepairBatchMapRef = useRef(new Map<string, string>());
     const defaultTitleRef = useRef(document.title);
     const pollRef = useRef<() => void>(() => {});
     const [logsOpen, setLogsOpen] = useState(false);
@@ -139,14 +161,31 @@ export default function ImagePage() {
         void Promise.all([getPublicModels(), listGenerationBatches(), getGenerationPreferences()]).then(async ([availableModels, batchPage, preferences]) => {
             if (disposed || useUserStore.getState().sessionVersion !== sessionVersion) return;
             const batches = batchPage.batches;
-            preferencesRef.current = preferences;
             const imageModels = availableModels.filter((item) => item.capability === "image");
+            const employeeDefaultModel = imageModels.find((item) => item.name === EMPLOYEE_DEFAULT_IMAGE_MODEL);
+            let activePreferences = preferences;
+            if (employeeDefaultModel && Number(preferences.employeePresetVersion || 0) < EMPLOYEE_PRESET_VERSION) {
+                activePreferences = {
+                    ...preferences,
+                    employeePresetVersion: EMPLOYEE_PRESET_VERSION,
+                    imageModelId: employeeDefaultModel.id,
+                    size: "3:4",
+                    count: "1",
+                };
+                try {
+                    activePreferences = await updateGenerationPreferences(activePreferences);
+                } catch (error) {
+                    if (!disposed && useUserStore.getState().sessionVersion === sessionVersion) message.error(error instanceof Error ? error.message : "员工默认预设同步失败");
+                }
+            }
+            preferencesRef.current = activePreferences;
             modelsRef.current = imageModels;
             setModels(imageModels);
-            const preferredModelId = typeof preferences.imageModelId === "string" && imageModels.some((item) => item.id === preferences.imageModelId) ? preferences.imageModelId : imageModels[0]?.id || "";
+            const preferredModelId = typeof activePreferences.imageModelId === "string" && imageModels.some((item) => item.id === activePreferences.imageModelId) ? activePreferences.imageModelId : employeeDefaultModel?.id || imageModels[0]?.id || "";
             setModelId((current) => current || preferredModelId);
+            if (preferredModelId) updateConfig("imageModel", encodeChannelModel("platform", preferredModelId));
             for (const key of ["quality", "size", "count", "background"] as const) {
-                if (typeof preferences[key] === "string") updateConfig(key, preferences[key]);
+                if (typeof activePreferences[key] === "string") updateConfig(key, activePreferences[key]);
             }
             setLogs(batches.map((batch) => summaryToLog(batch, imageModels)));
             const activeBatches = batches.filter((batch) => batch.summary.activeCount > 0);
@@ -173,7 +212,8 @@ export default function ImagePage() {
     }, [activeBatchIds]);
 
     const activeModel = models.find((item) => item.id === modelId);
-    const canGenerate = Boolean(prompt.trim() && modelId);
+    const batchRepairRunning = batchRepairItems.some((item) => item.status === "waiting" || item.status === "queued" || item.status === "running");
+    const canGenerate = Boolean((prompt.trim() || quickRepairs.length) && modelId && (mode === "normal" || (batchReferences.length >= BATCH_REPAIR_MIN_IMAGES && !batchRepairRunning)));
     const generationCount = Math.max(1, Math.min(20, Number(config.count) || 1));
     const failedResultIndexes = results.flatMap((item, index) => (item.status === "failed" ? [index] : []));
     const successImages = results.flatMap((item) => (item.status === "success" && item.image ? [item.image] : []));
@@ -220,11 +260,29 @@ export default function ImagePage() {
         return { log, results: detail.tasks.map(taskToResult) };
     };
 
+    const applyBatchRepairDetail = (batchId: string, detail: GenerationBatchDetail) => {
+        const itemId = batchRepairBatchMapRef.current.get(batchId);
+        const task = detail.tasks[0];
+        if (!itemId || !task) return;
+        const result = taskToResult(task);
+        setBatchRepairItems((current) => current.map((item) => item.id === itemId ? {
+            ...item,
+            batchId,
+            taskId: task.id,
+            status: result.status === "reviewing" ? "running" : result.status,
+            image: result.image,
+            error: result.error,
+        } : item));
+        if (result.status === "success" || result.status === "failed") batchRepairBatchMapRef.current.delete(batchId);
+    };
+
     const pollActiveBatches = async () => {
         await Promise.all(
             activeBatchIdsRef.current.map(async (batchId) => {
                 try {
-                    const applied = applyDetail(await getGenerationBatch(batchId));
+                    const detail = await getGenerationBatch(batchId);
+                    applyBatchRepairDetail(batchId, detail);
+                    const applied = applyDetail(detail);
                     if (previewLogIdRef.current === batchId) {
                         setPreviewLog(applied.log);
                         setResults(applied.results);
@@ -255,6 +313,29 @@ export default function ImagePage() {
         }
     };
 
+    const addBatchReferences = async (files?: FileList | null) => {
+        const sessionVersion = useUserStore.getState().sessionVersion;
+        const imageFiles = Array.from(files || []).filter((file) => SUPPORTED_IMAGE_TYPES.has(file.type));
+        const available = Math.max(0, BATCH_REPAIR_MAX_IMAGES - batchReferences.length);
+        const accepted = imageFiles.slice(0, available);
+        if (!accepted.length) {
+            if (imageFiles.length) message.warning(`批量逐张返修最多上传 ${BATCH_REPAIR_MAX_IMAGES} 张图片`);
+            return;
+        }
+        try {
+            const nextReferences = await Promise.all(accepted.map(async (file) => {
+                const media = await uploadGenerationMedia(file, file.name);
+                return { id: nanoid(), name: file.name, type: media.mimeType, dataUrl: media.url, storageKey: media.id };
+            }));
+            assertCurrentSession(sessionVersion);
+            setBatchReferences((value) => [...value, ...nextReferences].slice(0, BATCH_REPAIR_MAX_IMAGES));
+            if (accepted.length < imageFiles.length) message.warning(`仅添加前 ${available} 张，批量上限为 ${BATCH_REPAIR_MAX_IMAGES} 张`);
+        } catch (error) {
+            if (useUserStore.getState().sessionVersion !== sessionVersion) return;
+            message.error(error instanceof Error ? error.message : "批量图片上传失败");
+        }
+    };
+
     const addReferencesFromClipboard = async () => {
         const sessionVersion = useUserStore.getState().sessionVersion;
         try {
@@ -265,14 +346,25 @@ export default function ImagePage() {
                 message.error(t("imageWorkbench.clipboardEmpty"));
                 return;
             }
+            const available = mode === "batch-repair" ? Math.max(0, BATCH_REPAIR_MAX_IMAGES - batchReferences.length) : blobs.length;
+            const accepted = blobs.slice(0, available);
+            if (!accepted.length) {
+                message.warning(`批量逐张返修最多添加 ${BATCH_REPAIR_MAX_IMAGES} 张图片`);
+                return;
+            }
             const nextReferences = await Promise.all(
-                blobs.map(async (blob, index) => {
+                accepted.map(async (blob, index) => {
                     const media = await uploadGenerationMedia(blob, `clipboard-${index + 1}.png`);
                     return { id: nanoid(), name: media.originalName, type: media.mimeType, dataUrl: media.url, storageKey: media.id };
                 }),
             );
             assertCurrentSession(sessionVersion);
-            setReferences((value) => [...value, ...nextReferences]);
+            if (mode === "batch-repair") {
+                setBatchReferences((value) => [...value, ...nextReferences].slice(0, BATCH_REPAIR_MAX_IMAGES));
+                if (accepted.length < blobs.length) message.warning(`仅添加前 ${available} 张，批量上限为 ${BATCH_REPAIR_MAX_IMAGES} 张`);
+            } else {
+                setReferences((value) => [...value, ...nextReferences]);
+            }
             message.success(t("imageWorkbench.clipboardAdded", { count: nextReferences.length }));
         } catch (error) {
             if (useUserStore.getState().sessionVersion !== sessionVersion) return;
@@ -284,7 +376,7 @@ export default function ImagePage() {
         const sessionVersion = useUserStore.getState().sessionVersion;
         const agentTaskId = agentTaskIdRef.current;
         agentTaskIdRef.current = undefined;
-        const text = prompt.trim();
+        const text = composeQuickRepairPrompt(quickRepairs, prompt);
         if (!text) {
             message.error(t("imageWorkbench.promptRequired"));
             if (agentTaskId) updateAgentTask(agentTaskId, { status: "failed", error: t("imageWorkbench.promptRequired") });
@@ -303,6 +395,7 @@ export default function ImagePage() {
             const created = await createGenerationBatch({ modelId: resolvedModelId, prompt: text, count: generationCount, parameters: generationParameters(effectiveConfig), referenceMediaIds });
             assertCurrentSession(sessionVersion);
             const applied = applyDetail({ ...created, referenceMediaIds });
+            setLastGenerationError(null);
             setPreviewLog(applied.log);
             setResults(applied.results);
             if (agentTaskId) {
@@ -312,8 +405,76 @@ export default function ImagePage() {
         } catch (error) {
             if (useUserStore.getState().sessionVersion !== sessionVersion) return;
             const detail = error instanceof Error ? error.message : t("workbench.generationFailed");
+            setLastGenerationError({ model: activeModel?.name || activeModel?.displayName || modelId, detail });
             if (agentTaskId) updateAgentTask(agentTaskId, { status: "failed", error: detail });
             message.error(detail);
+        }
+    };
+
+    const submitBatchRepairItem = async (item: BatchRepairItem, resolvedModelId: string, text: string, sessionVersion: number) => {
+        const submittedModel = activeModel?.name || activeModel?.displayName || modelId;
+        setBatchRepairItems((current) => current.map((value) => value.id === item.id ? { ...value, model: submittedModel, status: "waiting", error: undefined, image: undefined } : value));
+        try {
+            const referenceMediaId = item.reference.storageKey;
+            if (!referenceMediaId) throw new Error("原图尚未完成上传，请重新添加");
+            const created = await createGenerationBatch({ modelId: resolvedModelId, prompt: text, count: 1, parameters: generationParameters(effectiveConfig), referenceMediaIds: [referenceMediaId] });
+            assertCurrentSession(sessionVersion);
+            batchRepairBatchMapRef.current.set(created.batch.id, item.id);
+            const detail = { ...created, referenceMediaIds: [referenceMediaId] };
+            const applied = applyDetail(detail);
+            applyBatchRepairDetail(created.batch.id, detail);
+            setPreviewLog(applied.log);
+        } catch (error) {
+            if (useUserStore.getState().sessionVersion !== sessionVersion) return;
+            const detail = error instanceof Error ? error.message : t("workbench.generationFailed");
+            setBatchRepairItems((current) => current.map((value) => value.id === item.id ? { ...value, status: "failed", error: detail } : value));
+        }
+    };
+
+    const generateBatchRepair = async () => {
+        const sessionVersion = useUserStore.getState().sessionVersion;
+        const text = composeQuickRepairPrompt(quickRepairs, prompt);
+        if (!text) {
+            message.error(t("imageWorkbench.promptRequired"));
+            return;
+        }
+        if (!modelId) {
+            message.warning(t("imageWorkbench.noModelHint"));
+            return;
+        }
+        if (batchReferences.length < BATCH_REPAIR_MIN_IMAGES || batchReferences.length > BATCH_REPAIR_MAX_IMAGES) {
+            message.warning(`请上传 ${BATCH_REPAIR_MIN_IMAGES}～${BATCH_REPAIR_MAX_IMAGES} 张图片`);
+            return;
+        }
+        ensureNotifyPermission();
+        setLastGenerationError(null);
+        const items = batchReferences.map((reference) => ({ id: nanoid(), reference, status: "waiting" as const }));
+        setBatchRepairItems(items);
+        try {
+            const resolvedModelId = await resolvePlatformImageModelId(modelId);
+            assertCurrentSession(sessionVersion);
+            await Promise.allSettled(items.map((item) => submitBatchRepairItem(item, resolvedModelId, text, sessionVersion)));
+        } catch (error) {
+            if (useUserStore.getState().sessionVersion !== sessionVersion) return;
+            const detail = error instanceof Error ? error.message : t("workbench.generationFailed");
+            setBatchRepairItems((current) => current.map((item) => item.status === "waiting" ? { ...item, status: "failed", error: detail } : item));
+            setLastGenerationError({ model: activeModel?.name || activeModel?.displayName || modelId, detail });
+        }
+    };
+
+    const retryBatchRepairItem = async (itemId: string) => {
+        const item = batchRepairItems.find((value) => value.id === itemId);
+        const text = composeQuickRepairPrompt(quickRepairs, prompt);
+        if (!item || !text || !modelId) return;
+        const sessionVersion = useUserStore.getState().sessionVersion;
+        try {
+            const resolvedModelId = await resolvePlatformImageModelId(modelId);
+            assertCurrentSession(sessionVersion);
+            await submitBatchRepairItem(item, resolvedModelId, text, sessionVersion);
+        } catch (error) {
+            if (useUserStore.getState().sessionVersion !== sessionVersion) return;
+            const detail = error instanceof Error ? error.message : t("workbench.generationFailed");
+            setBatchRepairItems((current) => current.map((value) => value.id === itemId ? { ...value, status: "failed", error: detail } : value));
         }
     };
 
@@ -356,6 +517,12 @@ export default function ImagePage() {
         message.success(t("imageWorkbench.zipDownloaded", { count: files.length }));
     };
 
+    const continueBatchResult = (image: GeneratedImage, index: number) => {
+        setReferences([{ id: nanoid(), name: `batch-result-${index + 1}.png`, type: image.mimeType || "image/png", dataUrl: image.dataUrl, storageKey: image.storageKey }]);
+        setMode("normal");
+        message.success("已带入普通模式，可继续修改");
+    };
+
     const addResultToReferences = async (image: GeneratedImage, index: number) => {
         setReferences((value) => [...value, { id: nanoid(), name: `result-${index + 1}.png`, type: image.mimeType || "image/png", dataUrl: image.dataUrl, storageKey: image.storageKey }]);
         message.success(t("imageWorkbench.addedReference"));
@@ -386,15 +553,23 @@ export default function ImagePage() {
         if (payload.kind === "text") {
             setPrompt(payload.content);
         } else if (payload.kind === "image") {
+            if (mode === "batch-repair" && batchReferences.length >= BATCH_REPAIR_MAX_IMAGES) {
+                message.warning(`批量逐张返修最多上传 ${BATCH_REPAIR_MAX_IMAGES} 张图片`);
+                return;
+            }
             const existingId = payload.storageKey?.replace(/^image:/, "");
             if (existingId) {
-                setReferences((value) => [...value, { id: nanoid(), name: payload.title, type: "image", dataUrl: `/api/media/${existingId}`, storageKey: existingId }]);
+                const reference: ReferenceImage = { id: nanoid(), name: payload.title, type: "image", dataUrl: `/api/media/${existingId}`, storageKey: existingId };
+                if (mode === "batch-repair") setBatchReferences((value) => [...value, reference].slice(0, BATCH_REPAIR_MAX_IMAGES));
+                else setReferences((value) => [...value, reference]);
             } else {
                 const blob = await (await fetch(payload.dataUrl)).blob();
                 assertCurrentSession(sessionVersion);
                 const media = await uploadGenerationMedia(blob, `${payload.title}.png`);
                 assertCurrentSession(sessionVersion);
-                setReferences((value) => [...value, { id: nanoid(), name: payload.title, type: media.mimeType, dataUrl: media.url, storageKey: media.id }]);
+                const reference: ReferenceImage = { id: nanoid(), name: payload.title, type: media.mimeType, dataUrl: media.url, storageKey: media.id };
+                if (mode === "batch-repair") setBatchReferences((value) => [...value, reference].slice(0, BATCH_REPAIR_MAX_IMAGES));
+                else setReferences((value) => [...value, reference]);
             }
         } else {
             message.warning(t("imageWorkbench.unsupportedAsset"));
@@ -405,6 +580,8 @@ export default function ImagePage() {
     const createSession = () => {
         setPrompt("");
         setReferences([]);
+        setBatchReferences([]);
+        setBatchRepairItems([]);
         setResults([]);
         setSelectedLogIds([]);
         setPreviewLog(null);
@@ -473,6 +650,7 @@ export default function ImagePage() {
 
     const selectModel = (value: string) => {
         setModelId(value);
+        updateConfig("imageModel", encodeChannelModel("platform", value));
         const preferences = { ...preferencesRef.current, imageModelId: value };
         preferencesRef.current = preferences;
         void updateGenerationPreferences(preferences).catch(() => undefined);
@@ -520,9 +698,31 @@ export default function ImagePage() {
                         </div>
 
                         <div className="mt-6 space-y-5">
+                            <Segmented
+                                block
+                                value={mode}
+                                onChange={(value) => setMode(value as WorkbenchMode)}
+                                options={[
+                                    { label: "普通生成", value: "normal" },
+                                    { label: "批量逐张返修", value: "batch-repair" },
+                                ]}
+                            />
+                            <div>
+                                <div className="mb-2 text-base font-semibold">快速返修</div>
+                                <Checkbox.Group
+                                    className="flex flex-wrap gap-x-5 gap-y-2"
+                                    value={quickRepairs}
+                                    onChange={(values) => setQuickRepairs(values as QuickRepairOption[])}
+                                    options={[
+                                        { label: "去白边", value: "remove-white-border" },
+                                        { label: "修乱码 / 错字", value: "fix-chinese-text" },
+                                    ]}
+                                />
+                                <div className="mt-1.5 text-xs text-stone-500 dark:text-stone-400">可同时选择，只会组合提示词；最终仍需手动点击生成。</div>
+                            </div>
                             <div>
                                 <div className="mb-2 flex items-center justify-between gap-3">
-                                    <span className="text-base font-semibold">{t("workbench.prompt")}</span>
+                                    <span className="text-base font-semibold">补充修改（可选）</span>
                                     <div className="flex gap-2">
                                         <Button size="small" icon={<BookOpen className="size-3.5" />} onClick={() => setPromptDialogOpen(true)}>
                                             {t("workbench.viewPrompts")}
@@ -532,12 +732,23 @@ export default function ImagePage() {
                                         </Button>
                                     </div>
                                 </div>
-                                <Input.TextArea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={7} placeholder={t("imageWorkbench.promptPlaceholder")} />
+                                <Input.TextArea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={5} placeholder={'例如：把顶部大标题改成“农村创业项目优选”，其他地方不要动。'} />
+                                {!quickRepairs.length ? <div className="mt-1.5 text-xs text-stone-500 dark:text-stone-400">未选择快捷返修时，此处作为完整提示词使用。</div> : null}
                             </div>
+
+                            {lastGenerationError ? (
+                                <Alert
+                                    type="error"
+                                    showIcon
+                                    message={`${lastGenerationError.model} 当前生成失败。你的图片和修改要求已保留，可更换其他模型后重新生成。`}
+                                    description={lastGenerationError.detail}
+                                    action={<Button size="small" danger onClick={() => setSettingsOpen(true)}>更换模型</Button>}
+                                />
+                            ) : null}
 
                             <div className="min-w-0">
                                 <div className="mb-2 flex items-center justify-between gap-3">
-                                    <span className="text-base font-semibold">{t("imageWorkbench.references")}</span>
+                                    <span className="text-base font-semibold">{mode === "batch-repair" ? "待返修图片" : t("imageWorkbench.references")}</span>
                                     <div className="flex gap-2">
                                         <Button size="small" icon={<ClipboardPaste className="size-3.5" />} onClick={() => void addReferencesFromClipboard()}>
                                             {t("workbench.clipboard")}
@@ -567,7 +778,7 @@ export default function ImagePage() {
                                         event.preventDefault();
                                         dragDepthRef.current = 0;
                                         setIsReferenceDragActive(false);
-                                        void addReferences(event.dataTransfer.files);
+                                        void (mode === "batch-repair" ? addBatchReferences(event.dataTransfer.files) : addReferences(event.dataTransfer.files));
                                     }}
                                     onWheel={(event) => {
                                         if (event.currentTarget.scrollWidth <= event.currentTarget.clientWidth) return;
@@ -575,23 +786,24 @@ export default function ImagePage() {
                                         event.currentTarget.scrollLeft += event.deltaY;
                                     }}
                                 >
-                                    {references.map((item, index) => (
+                                    {(mode === "batch-repair" ? batchReferences : references).map((item, index, activeReferences) => (
                                         <div key={item.id} className="group relative size-20 shrink-0 overflow-hidden rounded-md border border-stone-200 dark:border-stone-800">
                                             <img src={item.dataUrl} alt={item.name} className="size-full object-cover" />
                                             <span className="absolute left-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">{imageReferenceLabel(index)}</span>
-                                            <ReferenceOrderButtons index={index} total={references.length} onMove={(offset) => setReferences((value) => moveListItem(value, index, offset))} />
+                                            <ReferenceOrderButtons index={index} total={activeReferences.length} onMove={(offset) => mode === "batch-repair" ? setBatchReferences((value) => moveListItem(value, index, offset)) : setReferences((value) => moveListItem(value, index, offset))} />
                                             <button
                                                 type="button"
                                                 className="absolute right-1 top-1 hidden size-6 items-center justify-center rounded bg-black/60 text-white group-hover:flex"
-                                                onClick={() => setReferences((value) => value.filter((ref) => ref.id !== item.id))}
+                                                onClick={() => mode === "batch-repair" ? setBatchReferences((value) => value.filter((ref) => ref.id !== item.id)) : setReferences((value) => value.filter((ref) => ref.id !== item.id))}
                                                 aria-label={t("imageWorkbench.removeReference")}
                                             >
                                                 <Trash2 className="size-3.5" />
                                             </button>
                                         </div>
                                     ))}
-                                    {!references.length ? <div className="flex min-w-full items-center justify-center text-sm text-stone-500">{isReferenceDragActive ? t("imageWorkbench.dropReferences") : t("imageWorkbench.noReferences")}</div> : null}
+                                    {!(mode === "batch-repair" ? batchReferences : references).length ? <div className="flex min-w-full items-center justify-center text-sm text-stone-500">{isReferenceDragActive ? t("imageWorkbench.dropReferences") : mode === "batch-repair" ? "请上传 2～10 张待返修图片" : t("imageWorkbench.noReferences")}</div> : null}
                                 </div>
+                                {mode === "batch-repair" ? <div className="mt-2 text-xs text-stone-500 dark:text-stone-400">已上传 {batchReferences.length}/{BATCH_REPAIR_MAX_IMAGES} 张，将按“原图 1 → 结果 1”逐张独立处理。</div> : null}
                             </div>
 
                             <div className="flex items-center justify-between rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm dark:border-stone-800 dark:bg-stone-900 sm:hidden">
@@ -604,13 +816,14 @@ export default function ImagePage() {
                             </div>
 
                             <div className="hidden gap-4 sm:grid sm:grid-cols-2">
-                                <GenerationSettings config={effectiveConfig} models={models} modelId={modelId} onModelChange={selectModel} updateConfig={updateGenerationConfig} />
+                                <GenerationSettings batchMode={mode === "batch-repair"} config={effectiveConfig} models={models} modelId={modelId} onModelChange={selectModel} updateConfig={updateGenerationConfig} />
                             </div>
                         </div>
 
                         <div className="mt-auto pt-6">
-                            <Button type="primary" size="large" block icon={<Sparkles className="size-4" />} disabled={!canGenerate} onClick={() => void generate()}>
-                                {t("workbench.generate")}
+                            {mode === "batch-repair" ? <Alert className="mb-3" type="warning" showIcon message={`本次将发起 ${batchReferences.length} 次图片编辑请求`} description="每张原图固定生成 1 张结果；单张失败不会影响其他图片。" /> : null}
+                            <Button type="primary" size="large" block icon={<Sparkles className="size-4" />} disabled={!canGenerate} onClick={() => void (mode === "batch-repair" ? generateBatchRepair() : generate())}>
+                                {mode === "batch-repair" ? "开始批量返修" : t("workbench.generate")}
                             </Button>
                         </div>
                     </div>
@@ -621,12 +834,12 @@ export default function ImagePage() {
                                 <h2 className="text-xl font-semibold">{t("workbench.results")}</h2>
                             </div>
                             <div className="flex items-center gap-2">
-                                {failedResultIndexes.length > 1 ? (
+                                {mode === "normal" && failedResultIndexes.length > 1 ? (
                                     <Button size="small" danger icon={<RefreshCw className="size-3.5" />} onClick={() => void retryResults(failedResultIndexes)}>
                                         {t("imageWorkbench.retryFailed", { count: failedResultIndexes.length })}
                                     </Button>
                                 ) : null}
-                                {successImages.length > 1 ? (
+                                {mode === "normal" && successImages.length > 1 ? (
                                     <Button size="small" icon={<Download className="size-3.5" />} onClick={() => void downloadBatchZip()}>
                                         {t("imageWorkbench.downloadAll")}
                                     </Button>
@@ -634,7 +847,22 @@ export default function ImagePage() {
                                 {activeBatchIds.length ? <Tag className="m-0 px-2 py-1">{t("imageWorkbench.batchInProgress", { count: activeBatchIds.length })}</Tag> : null}
                             </div>
                         </div>
-                        {results.length ? (
+                        {mode === "batch-repair" && batchRepairItems.length ? (
+                            <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+                                {batchRepairItems.map((item, index) => (
+                                    <BatchRepairResultCard
+                                        key={item.id}
+                                        item={item}
+                                        index={index}
+                                        model={activeModel?.name || activeModel?.displayName || modelId}
+                                        onChangeModel={() => setSettingsOpen(true)}
+                                        onRetry={() => void retryBatchRepairItem(item.id)}
+                                        onDownload={downloadImage}
+                                        onContinue={continueBatchResult}
+                                    />
+                                ))}
+                            </div>
+                        ) : mode === "normal" && results.length ? (
                             <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
                                 {results.map((result, index) =>
                                     result.status === "success" && result.image ? (
@@ -642,7 +870,7 @@ export default function ImagePage() {
                                     ) : result.status === "queued" || result.status === "running" || result.status === "reviewing" ? (
                                         <PendingImageCard key={result.id} status={result.status} />
                                     ) : (
-                                        <FailedImageCard key={result.id} error={result.error || t("workbench.generationFailed")} onRetry={() => void retryResults([index])} />
+                                        <FailedImageCard key={result.id} model={activeModel?.name || activeModel?.displayName || modelId} error={result.error || t("workbench.generationFailed")} onChangeModel={() => setSettingsOpen(true)} onRetry={() => void retryResults([index])} />
                                     ),
                                 )}
                             </div>
@@ -662,7 +890,7 @@ export default function ImagePage() {
                 multiple
                 className="hidden"
                 onChange={(event) => {
-                    void addReferences(event.target.files);
+                    void (mode === "batch-repair" ? addBatchReferences(event.target.files) : addReferences(event.target.files));
                     event.target.value = "";
                 }}
             />
@@ -679,7 +907,7 @@ export default function ImagePage() {
             </Drawer>
             <Drawer title={t("workbench.settings")} placement="bottom" size="82vh" open={settingsOpen} onClose={() => setSettingsOpen(false)}>
                 <div className="grid grid-cols-2 gap-3 pb-4">
-                    <GenerationSettings config={effectiveConfig} models={models} modelId={modelId} onModelChange={selectModel} updateConfig={updateGenerationConfig} />
+                    <GenerationSettings batchMode={mode === "batch-repair"} config={effectiveConfig} models={models} modelId={modelId} onModelChange={selectModel} updateConfig={updateGenerationConfig} />
                 </div>
             </Drawer>
             <PromptSelectDialog open={promptDialogOpen} onOpenChange={setPromptDialogOpen} onSelect={setPrompt} />
@@ -688,7 +916,7 @@ export default function ImagePage() {
     );
 }
 
-function GenerationSettings({ config, models, modelId, onModelChange, updateConfig }: { config: AiConfig; models: PublicModel[]; modelId: string; onModelChange: (value: string) => void; updateConfig: UpdateAiConfig }) {
+function GenerationSettings({ batchMode, config, models, modelId, onModelChange, updateConfig }: { batchMode: boolean; config: AiConfig; models: PublicModel[]; modelId: string; onModelChange: (value: string) => void; updateConfig: UpdateAiConfig }) {
     const theme = canvasThemes[useThemeStore((state) => state.theme)];
     const { t } = useTranslation();
 
@@ -714,9 +942,47 @@ function GenerationSettings({ config, models, modelId, onModelChange, updateConf
                 )}
             </label>
             <div className="col-span-2">
-                <ImageSettingsPanel config={config} onConfigChange={(key, value) => updateConfig(key, value)} theme={theme} showTitle={false} className="space-y-4" maxCount={20} />
+                <ImageSettingsPanel config={config} onConfigChange={(key, value) => updateConfig(key, value)} theme={theme} showTitle={false} showCount={!batchMode} className="space-y-4" maxCount={20} />
+                {batchMode ? <div className="mt-4 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm dark:border-stone-800 dark:bg-stone-900">每张图片生成 1 张</div> : null}
             </div>
         </>
+    );
+}
+
+function BatchRepairResultCard({ item, index, model, onChangeModel, onRetry, onDownload, onContinue }: {
+    item: BatchRepairItem;
+    index: number;
+    model: string;
+    onChangeModel: () => void;
+    onRetry: () => void;
+    onDownload: (image: GeneratedImage, index: number) => void;
+    onContinue: (image: GeneratedImage, index: number) => void;
+}) {
+    const statusLabel = item.status === "waiting" || item.status === "queued" ? "等待中" : item.status === "running" ? "生成中" : item.status === "success" ? "成功" : "失败";
+    return (
+        <div data-batch-repair-item={index + 1} className="overflow-hidden rounded-lg border border-stone-200 bg-background dark:border-stone-800">
+            <div className="flex items-center gap-2 border-b border-stone-200 p-2 dark:border-stone-800">
+                <img src={item.reference.dataUrl} alt={item.reference.name} className="size-10 rounded object-cover" />
+                <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">原图 {index + 1} · {item.reference.name}</div>
+                    <div className="text-xs text-stone-500 dark:text-stone-400">逐张独立返修</div>
+                </div>
+                <Tag color={item.status === "success" ? "green" : item.status === "failed" ? "red" : "blue"}>{statusLabel}</Tag>
+            </div>
+            {item.status === "success" && item.image ? (
+                <>
+                    <Image src={item.image.dataUrl} alt={`批量返修结果 ${index + 1}`} className="aspect-square object-cover" />
+                    <div className="grid grid-cols-2 gap-2 border-t border-stone-200 p-3 dark:border-stone-800">
+                        <Button size="small" icon={<Download className="size-3.5" />} onClick={() => onDownload(item.image!, index)}>下载</Button>
+                        <Button size="small" icon={<PenLine className="size-3.5" />} onClick={() => onContinue(item.image!, index)}>继续修改</Button>
+                    </div>
+                </>
+            ) : item.status === "failed" ? (
+                <FailedImageCard model={item.model || model} error={item.error || "图片返修失败"} onChangeModel={onChangeModel} onRetry={onRetry} />
+            ) : (
+                <PendingImageCard status={item.status === "running" ? "running" : "queued"} />
+            )}
+        </div>
     );
 }
 
@@ -785,7 +1051,7 @@ function PendingImageCard({ status }: { status: "queued" | "running" | "reviewin
     );
 }
 
-function FailedImageCard({ error, onRetry }: { error: string; onRetry: () => void }) {
+function FailedImageCard({ model, error, onChangeModel, onRetry }: { model: string; error: string; onChangeModel: () => void; onRetry: () => void }) {
     const { t } = useTranslation();
     return (
         <div className="overflow-hidden rounded-lg border border-red-200 bg-red-50 dark:border-red-950 dark:bg-red-950/20">
@@ -794,8 +1060,10 @@ function FailedImageCard({ error, onRetry }: { error: string; onRetry: () => voi
                 <Typography.Paragraph ellipsis={{ rows: 4 }} className="!mb-0 !text-xs !text-red-500 dark:!text-red-300">
                     {error}
                 </Typography.Paragraph>
+                <div className="text-xs text-red-600 dark:text-red-300">{model} 当前生成失败。你的图片和修改要求已保留。</div>
             </div>
-            <div className="flex justify-end border-t border-red-200 p-3 dark:border-red-950">
+            <div className="flex justify-end gap-2 border-t border-red-200 p-3 dark:border-red-950">
+                <Button size="small" onClick={onChangeModel}>更换模型</Button>
                 <Button size="small" danger onClick={onRetry}>
                     {t("workbench.retry")}
                 </Button>
@@ -934,6 +1202,7 @@ function LogCard({ log, selected, active, onSelectedChange, onClick }: { log: Ge
                     </div>
                     <div className="flex flex-wrap justify-end gap-1">
                         <Tag className="m-0 flex h-6 items-center rounded-md px-1.5 text-xs leading-none">{t("workbench.itemCount", { count: log.imageCount })}</Tag>
+                        <Tag className="m-0 flex h-6 items-center rounded-md px-1.5 text-xs leading-none" color="gold">成本待结算</Tag>
                         {log.durationMs ? (
                             <Tag className="m-0 flex h-6 items-center rounded-md px-1.5 text-xs leading-none" color="green">
                                 {formatDuration(log.durationMs)}
