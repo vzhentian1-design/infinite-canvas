@@ -1,3 +1,22 @@
+# 无限画布当前工程交接（第二阶段）
+
+## CURRENT_STATE
+
+- CURRENT_STAGE：PHASE2_LOCAL_CANDIDATE；STATUS：HOLD_PROVIDER_MODEL_AND_COST_BOUNDARY。
+- Source：本机 `D:\AI\codex项目\无限画布\infinite-canvas`；施工分支 `phase2/safe-image-routing-costs`，从企业升级基线 d767ae3 创建。代码提交 `fad1dfe6fac1cda51dde3348a9b7696f9ec98993`，tree `aad056dae20dc51e8c0a94f9480b87f3d0a9bf8b`。
+- 准确结果：[RESULT_PHASE2_20261016.md](RESULT_PHASE2_20261016.md)。本轮代码与模拟验证已完成，**未部署、未启用主备、助手付费生图/改图发送均为0**。
+- qidong 401：服务器密钥脱敏匹配已禁用的原生图令牌；Owner亲自启用后免费鉴权200。但图片目录为空，Owner 02:39的实际请求403无权使用旧模型，当前广场未找到gpt-image-2-qidong。何人禁用、下架/权限变化时间未查明，不宣称供应商封号或永久下架。
+- 安全候选：图片503/超时/断连/未知结果不自动换商；401最多主备各一次；重启不重放running图片任务；未知attempt不直接retry；日志不可写不发送图片。渠道冷却与恢复优先级复用原实现。
+- 费用候选：供应商请求号、实际渠道/模型、渠道估算快照；后台明确估算和实际扣费未知。无可靠账单关联，不填现金0；旧billed_amount不是供应商现金成本。员工汇总、长期账单留存与自动对账未实现。
+- 验证：API build、77 PASS / 0 FAIL / 1实PG测试SKIP；前端typecheck/build、本地实际组件模拟展示及机械UI检查通过；详见RESULT与evidence/phase2。不是Provider或线上验收。
+- 线上仍是第一阶段前端镜像7e6d6c1575fb与原API 8d467b14cf09；健康正常、最终无inflight。原服务器WIP、数据、第一阶段回滚点保留，两个New API与Studio未修改。
+- NEXT_ROUTE：先核实可用同型号主渠道与当前价格；再受限生成1次、成功才双参考图编辑1次，首失败停止。Owner已授权自行试验，助手限定现行已核实¥0.03模型、最多预计¥0.06；现行同价模型未确认，额度未使用，不迁移到贵模型或Packy。
+- OWNER_ACTION：取得齐东恢复/权限说明，或裁决替代同型号主渠道及Packy费用上限；在此之前保持生产配置。后续先实PG验证和冻结发布/回滚包，再启用主备。
+- DO_NOT_REOPEN：不重复v0.20升级、全面审计或回滚演练；不迁移New API、不修改Studio、不删资产、不从纯前端main施工。
+
+以下为第一阶段历史交接，保留其部署与回滚证据；历史“下一步待裁决”不覆盖上方当前状态。
+
+---
 # 无限画布阶段一交接（2026-10-16）
 
 ## 当前结论与停止边界
@@ -88,3 +107,4 @@ Packy 当前公开模型详情将 gpt-image-2 / 2.5-flare / 2.5-sunburst 列为 
 ## Notion 与交付责任
 
 [Canvas 项目入口](https://app.notion.com/p/3face9f11b9b81bf9b80d5ec21f22085) · [New API 项目入口](https://app.notion.com/p/3face9f11b9b8154bcdfcf48c824f33e)。统一总目录复用既有「项目」数据库，以每项目一个入口串联代码/域名/版本/里程碑/证据/遗留/下一步；已有「东元 Studio｜项目入口」保留原位链接，未重建档案。资产盘点与清理建议见同仓库 `ASSET_INVENTORY_20261016.md`；未获得删除授权，不执行清理。阶段一在此停止，后续路线及新的付费验收由 Owner 裁决。
+
