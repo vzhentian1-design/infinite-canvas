@@ -60,7 +60,7 @@ curl -fsS https://canvas.dongyuanhub.com/health
 
 Owner 提供齐东 ¥0.03/张；按原验收范围限定最多 2 次、预计 ¥0.06、首失败停止。实际只发 1 次，改图 0 次。当前齐东登录账号当日请求号检索未找到匹配账单，模型广场搜索 gpt-image-2 为 0 结果；令牌列表有 3 个禁用、1 个启用，未揭示或更换密钥，未建立服务器密钥与其中某条的匹配。401 鉴权失败已证实，具体失效原因及实际扣费 UNKNOWN。
 
-Packy 当前公开模型详情将 gpt-image-2 / 2.5-flare / 2.5-sunburst 列为 image 分组按次计费、范围 $0.029–$3.558、显示 7.2 折。这与“按输入输出”旧描述不同；详情未给出本次参数对应的确定账单，不能用区间、折扣或账户余额变化伪造逐请求现金成本。未发 Packy 验收调用。
+Packy 当前公开模型详情将 gpt-image-2 / 2.5-flare / 2.5-sunburst 列为 image 分组按次计费、范围 $0.029–$3.558、显示 7.2 折。价格卡不能替代结算公式；随后查到供应商消费日志中 2026-10-15 共7条 gpt-image-2 记录，含输入/输出token与变化的实际账户扣减：例如页面时间13:24:35输入5397/输出134，$0.166546；12:47:56输入2162/输出134，$0.074150。这支持Owner所述输入输出影响计费，不能因价格页写“按次”就否定。未取得这7条与Canvas任务的唯一请求号关联，也未核实充值实付折算，因此它们是供应商账户账单样本，不是本次验收费用或银行现金成本。未发 Packy 验收调用。
 
 本机原始证据在任务根目录 `evidence/`：构建/测试日志、rollback-rehearsal.log、protected-check.txt、数据指纹、preference-semantic-check.json、browser-preservation.json、paid-validation-result.txt、供应商定价及检索文本、workbench-v020.jpg、generation-failure-v020.jpg。业务截图、数据库、账户余额及历史内容不上传公开仓库；发布摘要见本文件和 `ASSET_INVENTORY_20261016.md`。
 
