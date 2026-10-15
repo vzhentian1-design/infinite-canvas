@@ -60,6 +60,8 @@ export type AiConfig = {
     canvasImageCount: string;
     proxyEnabled: boolean;
     proxyUrl: string;
+    nodeRegenerateBehavior: "new-node" | "overwrite";
+    autoFocusOnSelect: boolean;
 };
 
 export type WebdavSyncConfig = {
@@ -133,6 +135,8 @@ export const defaultConfig: AiConfig = {
     canvasImageCount: "1",
     proxyEnabled: false,
     proxyUrl: DEFAULT_LOCAL_PROXY_URL,
+    nodeRegenerateBehavior: "new-node",
+    autoFocusOnSelect: false,
 };
 
 export const defaultWebdavSyncConfig: WebdavSyncConfig = {
@@ -198,9 +202,13 @@ export function modelMatchesCapability(config: AiConfig, value: string, capabili
 export function resolveModelForCapability(config: AiConfig, currentModel: string | undefined, capability: ModelCapability) {
     const defaultModel = capability === "image" ? config.imageModel : capability === "video" ? config.videoModel : capability === "audio" ? config.audioModel : config.textModel;
     const fallbackModel = capability === "image" ? defaultConfig.imageModel : capability === "video" ? defaultConfig.videoModel : capability === "audio" ? defaultConfig.audioModel : defaultConfig.textModel;
-    if (currentModel && modelMatchesCapability(config, currentModel, capability)) return currentModel;
-    if (defaultModel && modelMatchesCapability(config, defaultModel, capability)) return defaultModel;
-    if (config.channels.some((channel) => channel.id === PLATFORM_CHANNEL_ID)) return "";
+    for (const model of [currentModel, defaultModel]) {
+        if (!model) continue;
+        const configuredCapability = modelCapabilityOf(config, model);
+        // Keep unavailable selections visible so the readiness check blocks the
+        // request. Only a known capability switch may choose another model.
+        if (!configuredCapability || configuredCapability === capability) return model;
+    }
     return fallbackModel;
 }
 
@@ -216,8 +224,8 @@ export function resolveModelScript(config: AiConfig, value: string) {
 
 function isAiConfigReady(config: AiConfig, model: string) {
     if (decodeChannelModel(model)?.channelId === PLATFORM_CHANNEL_ID) return Boolean(findChannelModel(config, model));
-    const channel = resolveModelChannel(config, model);
-    return Boolean(model.trim() && channel.baseUrl.trim() && channel.apiKey.trim());
+    const match = findChannelModel(config, model);
+    return Boolean(match && match.channel.baseUrl.trim() && match.channel.apiKey.trim());
 }
 
 function platformConfig(config: AiConfig, models: PublicModel[]): AiConfig {
@@ -228,8 +236,7 @@ function platformConfig(config: AiConfig, models: PublicModel[]): AiConfig {
     const channel = createModelChannel({ id: PLATFORM_CHANNEL_ID, name: "平台模型", baseUrl: "", apiKey: "", models: platformModels });
     const currentImageModel = modelOptionName(config.imageModel);
     const imageModel = models.find((model) => model.capability === "image" && (model.id === currentImageModel || model.name === currentImageModel || model.displayName === currentImageModel))
-        || models.find((model) => model.capability === "image" && model.name === EMPLOYEE_DEFAULT_IMAGE_MODEL)
-        || models.find((model) => model.capability === "image");
+        || (!currentImageModel ? models.find((model) => model.capability === "image" && model.name === EMPLOYEE_DEFAULT_IMAGE_MODEL) || models.find((model) => model.capability === "image") : undefined);
     const textModel = platformModels.find((model) => model.capability === "text");
     const imageValue = imageModel ? encodeChannelModel(channel.id, imageModel.id) : config.imageModel;
     const textValue = textModel ? encodeChannelModel(channel.id, textModel.name) : "";
@@ -303,6 +310,8 @@ export const useConfigStore = create<ConfigStore>()(
                     videoMode: state.config.videoMode,
                     proxyEnabled: state.config.proxyEnabled,
                     proxyUrl: state.config.proxyUrl,
+                    nodeRegenerateBehavior: state.config.nodeRegenerateBehavior,
+                    autoFocusOnSelect: state.config.autoFocusOnSelect,
                 },
             }),
             merge: (persisted, current) => {
@@ -331,6 +340,8 @@ export const useConfigStore = create<ConfigStore>()(
                         videoMode: persistedConfig.videoMode ?? defaults.videoMode,
                         proxyEnabled: persistedConfig.proxyEnabled ?? defaults.proxyEnabled,
                         proxyUrl: persistedConfig.proxyUrl ?? defaults.proxyUrl,
+                        nodeRegenerateBehavior: persistedConfig.nodeRegenerateBehavior ?? defaults.nodeRegenerateBehavior,
+                        autoFocusOnSelect: persistedConfig.autoFocusOnSelect ?? defaults.autoFocusOnSelect,
                     },
                 };
             },
