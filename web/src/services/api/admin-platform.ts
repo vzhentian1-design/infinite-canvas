@@ -181,7 +181,7 @@ export type RequestLog = {
 
 export async function getAdminRequestLogs(params: { from?: string; to?: string; userId?: string; modelId?: string; channelId?: string; type?: RequestLog["type"]; status?: RequestLog["status"]; reconciliation?: HistoricalBilling["status"]; limit?: number; offset?: number }, history = false) {
     const query = serializeApiParams(params);
-    return await apiRequest<{ logs: RequestLog[]; total: number; history?: BillingHistorySummary | null }>(`/api/admin/request-logs${history ? "/history" : ""}${query.size ? `?${query}` : ""}`);
+    return await apiRequest<{ logs: RequestLog[]; total: number; history?: BillingHistorySummary | null; billingHistoryUnavailable?: boolean }>(`/api/admin/request-logs${history ? "/history" : ""}${query.size ? `?${query}` : ""}`);
 }
 
 export async function clearAdminRequestLogs() {

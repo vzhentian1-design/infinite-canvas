@@ -1,6 +1,6 @@
 # Canvas 当前交接：历史账单已接入
 
-本分支 `feat/canvas-historical-billing` 已将历史账单接入原后台：[直接查看](https://canvas.dongyuanhub.com/admin/logs?view=history)。400 条历史图片调用、272 条候选关联、128 条待核；候选扣费分别为 USD 4.532464 / CNY 6.000000，不是已确认实付。
+本分支 `feat/canvas-historical-billing` 已将历史账单接入[原请求列表](https://canvas.dongyuanhub.com/admin/logs)，费用列直接关联并显示已导入的候选金额和账单详情；[独立历史视图](https://canvas.dongyuanhub.com/admin/logs?view=history)继续保留。400 条历史图片调用、272 条候选关联、128 条待核；候选扣费分别为 USD 4.532464 / CNY 6.000000，不是已确认实付。
 
 准确实施、线上镜像、原始数据保留、测试和回滚边界以 [本次结果](RESULT_HISTORICAL_BILLING.md) 为准。API 仅账单模块和日志路由变化，前端沿用企业 v0.20.0；22 个业务表内容指纹未变。原 worker、渠道路由、Key、模型价格、数据库 schema 未更换；本次收费请求 0。原主备候选仍未发布，Studio 和 rc39 未变。本阶段收口，无后台待执行写入。
 

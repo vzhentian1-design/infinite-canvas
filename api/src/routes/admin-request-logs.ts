@@ -4,7 +4,7 @@ import { z } from "zod";
 import { authenticate } from "../auth/session.js";
 import { db } from "../db/client.js";
 import { requestLogs, users } from "../db/schema.js";
-import { loadBillingHistory, queryBillingHistory } from "../billing-history.js";
+import { attachBillingHistory, loadBillingHistory, queryBillingHistory } from "../billing-history.js";
 
 const querySchema = z.object({
   from: z.string().datetime({ offset: true }).optional(),
@@ -24,7 +24,7 @@ export async function adminRequestLogRoutes(app: FastifyInstance) {
     if (!admin) return reply;
   });
 
-  app.get("/", async (request, _reply) => {
+  app.get("/", async (request, reply) => {
     const query = querySchema.parse(request.query);
     const filters: SQL[] = [];
     if (query.from) filters.push(gte(requestLogs.startedAt, new Date(query.from)));
@@ -70,7 +70,12 @@ export async function adminRequestLogRoutes(app: FastifyInstance) {
       .select({ total: sql<number>`count(*)::int` })
       .from(requestLogs)
       .where(where);
-    return { logs: rows, total: totals?.total ?? 0 };
+    reply.header("Cache-Control", "no-store");
+    try {
+      return { logs: attachBillingHistory(rows, loadBillingHistory()), total: totals?.total ?? 0 };
+    } catch {
+      return { logs: rows, total: totals?.total ?? 0, billingHistoryUnavailable: true };
+    }
   });
 
   app.get("/history", async (request, reply) => {

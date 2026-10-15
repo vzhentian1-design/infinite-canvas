@@ -56,6 +56,11 @@ export function parseBillingHistory(raw: string) {
 type History = ReturnType<typeof parseBillingHistory>;
 type Query = { from?: string; to?: string; userId?: string; modelId?: string; channelId?: string; type?: string; status?: string; reconciliation?: "candidate" | "unknown"; limit: number; offset: number };
 
+export function attachBillingHistory<T extends { id: string; type: string }>(logs: T[], history: History | undefined) {
+  const index = new Map(history?.logs.map((l) => [l.id, l.historicalBilling]));
+  return logs.map((log) => ({ ...log, historicalBilling: log.type === "image" ? index.get(log.id) : undefined }));
+}
+
 // The source bundle is a server-only, read-only mount. It survives request-log retention.
 let cached: History | undefined;
 export function loadBillingHistory() {

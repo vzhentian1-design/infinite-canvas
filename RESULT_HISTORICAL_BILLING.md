@@ -13,7 +13,7 @@ Owner 确认的目标：历史账单导入 Canvas，先在原后台逐笔查看�
 
 ## 最小实现
 
-管理员只读 GET `/api/admin/request-logs/history`。在原日志页切换历史账单后，支持日期、用户、模型、渠道、请求状态、对账状态筛选、分页和逐笔详情复制；合计跟随筛选，USD/CNY 独立计算到六位小数。
+管理员只读 GET `/api/admin/request-logs/history`。原列表 GET `/api/admin/request-logs` 同时按请求 ID 关联档案，直接显示候选金额、待核状态和账单详情，无需切换页面。历史账单独立视图还支持对账状态筛选与筛选合计，USD/CNY 独立计算到六位小数。未导入新请求保持原结算状态；档案损坏时原列表仍可读并明确提示关联失败。
 
 档案是后端私有只读导入文件，独立于默认 30 天日志清理。通过导入 ID、SHA256、唯一请求 ID 与不重复供应商行校验防止重复归账；损坏时返回 503，未配置时显示尚未导入。未新增写接口，不经浏览器下发渠道凭据。历史账单不随“清空实时日志”删除。
 
@@ -27,17 +27,19 @@ Owner 确认的目标：历史账单导入 Canvas，先在原后台逐笔查看�
 
 | 范围 | 结果 |
 | --- | --- |
-| API 实际文件差异 | 仅新增 `/app/dist/billing-history.js`、修改 `/app/dist/routes/admin-request-logs.js`；去掉新增入口后，原日志路由编译结果与线上原模块完全一致 |
+| API 实际文件差异 | 仅新增 `/app/dist/billing-history.js`、修改 `/app/dist/routes/admin-request-logs.js`；去掉历史读取及关联显示代码后，其余原日志路由编译结果与线上原模块完全一致 |
 | 原 API 其余模块 | 按文件 SHA256 验证完全相同；worker、upstream、认证、数据库 schema、依赖及 migrations 未替换 |
-| API 镜像 | `infinite-canvas-api:billing-history-20261016` / `b2e68713fe55ac7ed4863763ae30327ca1a17b757d2cfe3b34c42f87bc7f7f4e` |
-| 前端镜像 | `infinite-canvas:billing-history-20261016-r2` / `8692bbff6054cea74808aa3299701f2e695e287de288ff2029931d9744bed814` |
+| API 镜像 | `infinite-canvas-api:billing-history-listfix-20261016` / `06238696b70b85c24841ec6d40f32122730f511de8fd653d0b42bf3955e2f6ef` |
+| 前端镜像 | `infinite-canvas:billing-history-listfix-20261016` / `04c38a60e1a68c0c10884b841dc5d1de7f7c7ee227ada77ec5570fc51a373a2e` |
 | 数据保护 | 发布前新 pg_dump 330469 字节，pg_restore 目录校验通过；22 个业务表内容指纹全部相同，412 日志 / 261 任务 / 227 图片不变，inflight=0 |
 | 其他运行系统 | rc44、rc39、Studio PostgreSQL、Canvas PG/MinIO 的容器身份、配置、启动时间及 Studio 主 PID 不变；原环境变量和端口保持 |
-| 代码验证 | API 构建、前端类型检查和构建通过；3 项针对性测试通过：金额/零与未知、来源重复/越界、管理员入口与损坏档案失败关闭；角色测试使用隔离 mock，不冒充线上普通用户登录验收 |
+| 代码验证 | API 构建、前端类型检查和构建通过；5 项针对性测试通过，覆盖原列表 GET 返回候选/未知金额、按 ID 关联而不改原金额、零与未知、来源校验和管理员边界；角色/数据库测试使用隔离 mock，不冒充线上普通用户登录验收 |
 | 线上验证 | health 200；匿名历史接口 401；管理员页面实际显示 400/272/128 和独立币种合计；候选和待核详情、128 条待核筛选通过；390px 窄屏无页面横向溢出，表格保留横向滚动 |
 | 付费与迁移 | 模型请求新增 0、渠道/Key/权限/价格配置变化 0、Studio 改动 0、New API 图片迁移 0 |
 
 备份：服务器目录 `backup-before` 内的新 PG dump、原容器完整配置及内容指纹；原阶段完整 MinIO/源码/镜像备份仍在 `/opt/canvas-upgrade-20261016/backup`。
+
+原列表关联修复另有新备份 `backup-before-list-fix`、回滚容器 `canvas-migrated-api-pre-listfix-20261016` / `canvas-migrated-app-pre-listfix-20261016`。现场发布回执 `list-fix-result.json` 确认 22 个业务表、环境变量、端口、挂载和全部受保护服务不变。原 `/admin/logs` 近 7 天视图已实际核验：19:25:41 记录显示 USD 0.079180，19:18:57 显示 USD 0.051896，三条最新鉴权失败显示待核；原列表详情可查看来源。
 
 回滚容器已停止保留：`canvas-migrated-api-pre-billing-20261016`、`canvas-migrated-app-pre-billing-20261016`；中间前端 `canvas-migrated-app-billing-r1` 也保留。回滚时只回切 API/app，保留账单目录及数据库；不要回滚或清空 PG/MinIO。应先检查没有新任务，再停止现容器、改名保留并启用对应旧容器，随后核 health/数据；回切不覆盖原记录。
 
