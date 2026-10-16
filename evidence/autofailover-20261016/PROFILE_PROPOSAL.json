@@ -91,10 +91,11 @@
     "PackyExpectedUSD": "0.10-0.30",
     "PackyConservativePublicRangeReserveUSD": "7.12",
     "hardSingleRequestSpendCapVerified": false,
-    "stopOnFirstFailureOrUnknownCharge": true,
     "automaticPaidRetries": 0,
     "automaticTopUp": false,
-    "usesExistingBalanceOnly": true
+    "usesExistingBalanceOnly": true,
+    "stopOnFirstFailureOrUnknownImageResult": true,
+    "unavailableBillIsPendingVerificationNotProofOfZero": true
   },
   "remainingLimitations": [
     "Packy token log GET returns record not found",
