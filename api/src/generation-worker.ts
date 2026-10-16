@@ -12,6 +12,7 @@ import {
   generationTasks,
   mediaObjects,
   requestLogs,
+  users,
 } from "./db/schema.js";
 import { minio } from "./media.js";
 import { finishRequestLog, startRequestLog } from "./request-logs.js";
@@ -89,6 +90,7 @@ async function processTask(taskId: string) {
   let activeUpstreamRequestId: string | undefined;
   const failedAttemptWrites: Array<() => PromiseLike<unknown>> = [];
   try {
+    const [employee] = await db.select({ username: users.username }).from(users).where(eq(users.id, task.userId)).limit(1);
     const references = await acquireReferences(task.batchId);
     try {
       const [attemptState] = await db
@@ -125,6 +127,8 @@ async function processTask(taskId: string) {
           if (!requestLogId) throw new UpstreamError("请求日志不可写，未发送图片请求", "audit_unavailable", undefined, "never");
           if (channel.gateway) {
             channel.taskId = task.id;
+            channel.canvasUserId = task.userId;
+            channel.canvasUsername = employee?.username;
             channel.onGatewayReceipt = async (requestId, supplierRequestId) => {
               await db.update(requestLogs).set({ gatewayRequestId: requestId, ...(supplierRequestId ? { upstreamRequestId: supplierRequestId } : {}) }).where(eq(requestLogs.id, requestLogId));
             };

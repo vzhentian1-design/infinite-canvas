@@ -3,6 +3,21 @@ import { test, mock, afterEach } from "node:test";
 import { parseNewApiEvidence, fetchNewApiEvidence, fetchNewApiEvidenceBatch } from "../src/newapi-evidence.ts";
 
 afterEach(() => mock.restoreAll());
+
+test("USD platform value never relabels Qidong CNY or invents Packy debit", () => {
+  const other = { image_supplier: "canvas-qidong-flare", upstream_model_name: "gpt-image-2.5-flare", supplier_usd_cny_rate: 7.3, supplier_charge: { status: "verified", amount: "0.030000", currency: "CNY", request_id: "supplier-1", source: "https://api.qidong.autos/api/log/token", snapshot_sha256: "a".repeat(64) } };
+  const rows = [{ request_id: "gateway-1", upstream_request_id: "supplier-1", type: 2, quota: 15000, other: JSON.stringify(other) }];
+  const result = parseNewApiEvidence("gateway-1", rows);
+  assert.equal(result.platformAmountUsd, "0.030000");
+  assert.equal(result.supplierAmount, "0.030000");
+  assert.equal(result.supplierCurrency, "CNY");
+  assert.equal(result.supplierAmountUsd, "0.030000");
+  assert.equal(result.usdCnyReferenceRate, 1);
+  const packy = parseNewApiEvidence("gateway-2", [{ request_id: "gateway-2", type: 2, quota: 39753, other: JSON.stringify({ image_supplier: "canvas-packy-image2", upstream_model_name: "gpt-image-2" }) }]);
+  assert.equal(packy.platformAmountUsd, "0.079506");
+  assert.equal(packy.supplierAmountUsd, null);
+  assert.equal(packy.supplierSettlementStatus, "pending_verification");
+});
 test("one bounded log GET batches request identities without mixing settlements", async () => {
   const called=mock.method(globalThis,"fetch",async(url,init)=>{
     assert.deepEqual(url.searchParams.getAll("request_id"),["a","b"]);

@@ -47,7 +47,7 @@ export default function AdminModelsPage() {
         { title: "公开名称", key: "name", width: 220, render: (_, model) => <div><div className="font-medium text-stone-950 dark:text-stone-100">{model.displayName}</div><div className="text-xs text-stone-500">{model.name}</div></div> },
         { title: "能力", dataIndex: "capability", width: 90, render: (value) => value === "image" ? "图片" : "文本" },
         { title: "排序", dataIndex: "sortOrder", width: 80 },
-        { title: "价格", dataIndex: "pricePerImage", width: 140, render: (value: string | null, model) => model.capability === "image" ? (value != null ? `${formatModelPrice(value)} / 张` : "—") : "—" },
+        { title: "价格", dataIndex: "pricePerImage", width: 140, render: (value: string | null, model) => model.capability === "image" ? (model.config?.routing === "newapi" ? "New API 按渠道结算（USD）" : value != null ? `原始参考值 ${formatModelPrice(value)}（币种待核）` : "—") : "—" },
         { title: "状态", dataIndex: "status", width: 130, render: (status: AdminModel["status"], model) => <Select size="small" value={status} onChange={(value) => statusMutation.mutate({ id: model.id, status: value })} options={[{ value: "draft", label: "草稿" }, { value: "published", label: "已发布" }, { value: "disabled", label: "已停用" }]} /> },
         { title: "说明", dataIndex: "description", ellipsis: true, render: (value: string | null) => <span className="text-stone-500">{value || "—"}</span> },
         { title: "操作", key: "actions", fixed: "right", width: 240, render: (_, model) => <Space><Button type="text" size="small" icon={<Cable className="size-3.5" />} onClick={() => openBinding(model)}>渠道配置</Button><Button type="text" size="small" icon={<Pencil className="size-3.5" />} onClick={() => setEditing(model)}>编辑</Button><Button type="text" danger size="small" icon={<Trash2 className="size-3.5" />} onClick={() => modal.confirm({ title: `删除 ${model.displayName}？`, content: "有关联记录时服务端会拒绝删除。", okText: "删除", cancelText: "取消", okButtonProps: { danger: true }, onOk: () => deleteMutation.mutateAsync(model.id) })} /></Space> },
@@ -81,7 +81,7 @@ export default function AdminModelsPage() {
                         <Form.Item name="status" label="状态" rules={[{ required: true }]}><Select options={[{ value: "draft", label: "草稿" }, { value: "published", label: "已发布" }, { value: "disabled", label: "已停用" }]} /></Form.Item>
                     </div>
                     <Form.Item noStyle shouldUpdate={(previous, current) => previous.capability !== current.capability}>
-                        {({ getFieldValue }) => getFieldValue("capability") === "image" ? <Form.Item name="pricePerImage" label="价格（元 / 张）"><InputNumber min={0} precision={6} className="w-full" /></Form.Item> : null}
+                        {({ getFieldValue }) => getFieldValue("capability") === "image" ? <Form.Item name="pricePerImage" label="旧参考值（原币待核）" extra="本项目实际 USD 计价在 New API 管理；旧值不代表实付。"><InputNumber disabled={editing?.config?.routing === "newapi"} min={0} precision={6} className="w-full" /></Form.Item> : null}
                     </Form.Item>
                     <Form.Item name="description" label="说明"><Input.TextArea rows={3} /></Form.Item>
                     <Space className="flex justify-end"><Button onClick={() => setEditing(undefined)}>取消</Button><Button type="primary" htmlType="submit" loading={saveModel.isPending}>保存</Button></Space>

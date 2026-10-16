@@ -351,6 +351,8 @@ export async function generateImage(
     const safeParameters = openAIParameters(parameters, ["model", "prompt", "n", "response_format", "image", "image[]"]);
       const headers: Record<string, string> = candidate.apiKey ? { Authorization: `Bearer ${candidate.apiKey}` } : {};
       if (candidate.gateway && candidate.taskId) headers["X-Canvas-Task-Id"] = candidate.taskId;
+      if (candidate.gateway && candidate.canvasUserId) headers["X-Canvas-User-Id"] = candidate.canvasUserId;
+      if (candidate.gateway && candidate.canvasUsername) headers["X-Canvas-Username"] = encodeURIComponent(candidate.canvasUsername);
     if (references.length) {
       const isGptImage = /^(gpt-image|image-2)/i.test(candidate.upstreamModel);
       const form = new FormData();

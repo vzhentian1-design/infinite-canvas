@@ -20,6 +20,8 @@ export type ChannelCandidate = {
   gatewayRequestId?: string;
   gateway?: boolean;
   taskId?: string;
+  canvasUserId?: string;
+  canvasUsername?: string;
   onGatewayReceipt?: (requestId: string, supplierRequestId?: string) => Promise<void>;
 };
 

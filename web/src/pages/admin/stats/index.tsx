@@ -47,7 +47,7 @@ export default function AdminStatsPage() {
                 <Metric icon={Database} label="对象存储" value={`${formatBytes(statsQuery.data.storage.totalBytes)} · ${statsQuery.data.storage.totalCount} 张`} />
                 <Metric icon={Send} label="请求图片" value={totals?.requestCount || 0} />
                 <Metric icon={Image} label="成功图片" value={totals?.successImageCount || 0} />
-                <Metric icon={CircleDollarSign} label="估算费用" value={`¥${Number(totals?.estimatedCost || 0).toFixed(2)}`} />
+                <Metric icon={CircleDollarSign} label="费用（USD）" value="见请求账单" />
                 <Metric icon={Activity} label="任务成功率" value={percent(totals?.succeededTaskCount, totals?.requestCount)} />
                 <Metric icon={Waypoints} label="渠道成功率" value={percent(totals?.succeededAttemptCount, totals?.attemptCount)} />
                 <Metric icon={Clock3} label="平均耗时" value={duration(totals?.averageDurationMs || 0)} />
@@ -57,10 +57,10 @@ export default function AdminStatsPage() {
                 <Metric icon={MessageSquareText} label="文本调用" value={`${statsQuery.data?.textTotals.succeededRequestCount || 0}/${statsQuery.data?.textTotals.requestCount || 0} 成功`} />
             </div>
             <div className="mt-5 grid gap-5 xl:grid-cols-2">
-                <StatsTable title="按用户" loading={statsQuery.isLoading} rows={statsQuery.data?.byUsers || []} columns={[{ title: "用户", key: "user", render: (_, row) => <div><div className="font-medium">{row.displayName}</div><div className="text-xs text-stone-500">@{row.username}</div></div> }, ...taskColumns]} onExport={() => exportCsv(`按用户-${rangeTag}.csv`, statsQuery.data?.byUsers || [], [["displayName", "用户"], ["username", "账号"], ["requestCount", "请求数"], ["successImageCount", "成功图片"], ["estimatedCost", "估算费用"]])} />
-                <StatsTable title="按模型" loading={statsQuery.isLoading} rows={statsQuery.data?.byModels || []} columns={[{ title: "模型", key: "model", render: (_, row) => <div><div className="font-medium">{row.displayName}</div><div className="text-xs text-stone-500">{row.name}</div></div> }, ...taskColumns]} onExport={() => exportCsv(`按模型-${rangeTag}.csv`, statsQuery.data?.byModels || [], [["displayName", "模型"], ["name", "标识"], ["requestCount", "请求数"], ["successImageCount", "成功图片"], ["estimatedCost", "估算费用"]])} />
+                <StatsTable title="按用户" loading={statsQuery.isLoading} rows={statsQuery.data?.byUsers || []} columns={[{ title: "用户", key: "user", render: (_, row) => <div><div className="font-medium">{row.displayName}</div><div className="text-xs text-stone-500">@{row.username}</div></div> }, ...taskColumns]} onExport={() => exportCsv(`按用户-${rangeTag}.csv`, statsQuery.data?.byUsers || [], [["displayName", "用户"], ["username", "账号"], ["requestCount", "请求数"], ["successImageCount", "成功图片"]])} />
+                <StatsTable title="按模型" loading={statsQuery.isLoading} rows={statsQuery.data?.byModels || []} columns={[{ title: "模型", key: "model", render: (_, row) => <div><div className="font-medium">{row.displayName}</div><div className="text-xs text-stone-500">{row.name}</div></div> }, ...taskColumns]} onExport={() => exportCsv(`按模型-${rangeTag}.csv`, statsQuery.data?.byModels || [], [["displayName", "模型"], ["name", "标识"], ["requestCount", "请求数"], ["successImageCount", "成功图片"]])} />
             </div>
-            <div className="mt-5"><StatsTable title="按渠道尝试" loading={statsQuery.isLoading} rows={statsQuery.data?.byChannels || []} columns={[{ title: "渠道", dataIndex: "name" }, { title: "尝试数", dataIndex: "attemptCount", width: 90, sorter: (a, b) => a.attemptCount - b.attemptCount }, { title: "成功数", dataIndex: "succeededAttemptCount", width: 90, sorter: (a, b) => a.succeededAttemptCount - b.succeededAttemptCount }, { title: "成功率", key: "rate", width: 90, render: (_, row) => percent(row.succeededAttemptCount, row.attemptCount) }, { title: "平均耗时", dataIndex: "averageDurationMs", width: 110, render: duration, sorter: (a, b) => a.averageDurationMs - b.averageDurationMs }, { title: "P50", dataIndex: "p50DurationMs", width: 100, render: duration }, { title: "P95", dataIndex: "p95DurationMs", width: 100, render: duration }]} /></div>
+            <p className="mt-4 text-sm text-stone-500">历史参考值没有可靠币种，未直接换算为 USD。平台计价和供应商扣费请查看 <a href="/admin/logs" className="underline">请求账单</a>。</p><div className="mt-5"><StatsTable title="按渠道尝试" loading={statsQuery.isLoading} rows={statsQuery.data?.byChannels || []} columns={[{ title: "渠道", dataIndex: "name" }, { title: "尝试数", dataIndex: "attemptCount", width: 90, sorter: (a, b) => a.attemptCount - b.attemptCount }, { title: "成功数", dataIndex: "succeededAttemptCount", width: 90, sorter: (a, b) => a.succeededAttemptCount - b.succeededAttemptCount }, { title: "成功率", key: "rate", width: 90, render: (_, row) => percent(row.succeededAttemptCount, row.attemptCount) }, { title: "平均耗时", dataIndex: "averageDurationMs", width: 110, render: duration, sorter: (a, b) => a.averageDurationMs - b.averageDurationMs }, { title: "P50", dataIndex: "p50DurationMs", width: 100, render: duration }, { title: "P95", dataIndex: "p95DurationMs", width: 100, render: duration }]} /></div>
             </> : null}
         </div>
     );
@@ -69,7 +69,7 @@ export default function AdminStatsPage() {
 const taskColumns = [
     { title: "请求数", dataIndex: "requestCount", width: 100, sorter: (a: { requestCount: number }, b: { requestCount: number }) => a.requestCount - b.requestCount },
     { title: "成功图片", dataIndex: "successImageCount", width: 110, sorter: (a: { successImageCount: number }, b: { successImageCount: number }) => a.successImageCount - b.successImageCount },
-    { title: "估算费用", dataIndex: "estimatedCost", width: 120, render: (value: string) => `¥${Number(value || 0).toFixed(2)}`, sorter: (a: { estimatedCost: string }, b: { estimatedCost: string }) => Number(a.estimatedCost) - Number(b.estimatedCost) },
+
 ];
 
 function Metric({ icon: Icon, label, value }: { icon: typeof Send; label: string; value: string | number }) {

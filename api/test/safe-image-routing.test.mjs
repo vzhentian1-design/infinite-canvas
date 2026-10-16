@@ -91,3 +91,20 @@ test("generation and multi-reference edit preserve model, size, quality, n=1, an
   assert.equal(calls[1].init.body.get("n"), "1");
   assert.equal(candidate.upstreamRequestId, "synthetic-2");
 });
+
+test("employee identity is forwarded only to the configured New API gateway", async () => {
+  const [candidate] = await getChannelCandidates(modelId);
+  Object.assign(candidate, { gateway: true, taskId: "11111111-1111-4111-8111-111111111111", canvasUserId: "22222222-2222-4222-8222-222222222222", canvasUsername: "employee1" });
+  const calls = [];
+  mock.method(globalThis, "fetch", async (_, init) => {
+    calls.push(init.headers);
+    return new Response(JSON.stringify({ data: [{ b64_json: "aGVsbG8=" }] }), { headers: { "x-oneapi-request-id": "gateway-1" } });
+  });
+  await generateImage(candidate, "fixture", { size: "768x1024" }, []);
+  assert.equal(calls[0]["X-Canvas-User-Id"], candidate.canvasUserId);
+  assert.equal(calls[0]["X-Canvas-Username"], "employee1");
+  candidate.gateway = false;
+  await generateImage(candidate, "fixture", { size: "768x1024" }, []);
+  assert.equal(calls[1]["X-Canvas-User-Id"], undefined);
+  assert.equal(calls[1]["X-Canvas-Username"], undefined);
+});
