@@ -1,5 +1,5 @@
 {
-  "status": "CANDIDATE_NOT_DEPLOYED_AWAITING_OWNER",
+  "status": "DEPLOYED_REAL_ACCEPTANCE_2_PLUS_1",
   "employeeModels": [
     {
       "name": "canvas-image",
@@ -79,7 +79,25 @@
     "lookbackDays": 7,
     "originalGatewayRateLimitsPreserved": true
   },
-  "proposedPaidAcceptance": {
+  "remainingLimitations": [
+    "Packy token log GET returns record not found",
+    "Packy logged-in consumption rows do not expose request IDs",
+    "Packy true per-attempt debit remains pending verification until unique evidence exists"
+  ],
+  "requestRiskReserve": {
+    "CNY": "0.030000",
+    "USD": "3.557850",
+    "hardSupplierSpendCapVerified": false
+  },
+  "ownerApprovedTimeouts": [
+    180,
+    240
+  ],
+  "actualRealSupplierSends": 3,
+  "successfulRealImages": 2,
+  "PackyActualDebitStatus": "pending_verification",
+  "noPendingPaidTests": true,
+  "initialApprovedPaidAcceptance": {
     "maximumSupplierCalls": 2,
     "operations": [
       "qidong Sunburst single-reference edit; real supplier retries disabled",
@@ -102,14 +120,5 @@
     "stopOnFirstFailureOrUnknownImageResult": true,
     "unavailableBillIsPendingVerificationNotProofOfZero": true
   },
-  "remainingLimitations": [
-    "Packy token log GET returns record not found",
-    "Packy logged-in consumption rows do not expose request IDs",
-    "Packy true per-attempt debit remains pending verification until unique evidence exists"
-  ],
-  "requestRiskReserve": {
-    "CNY": "0.030000",
-    "USD": "3.557850",
-    "hardSupplierSpendCapVerified": false
-  }
+  "separatelyApprovedAdditionalRealSends": 1
 }

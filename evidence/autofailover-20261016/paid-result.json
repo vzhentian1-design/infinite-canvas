@@ -1,0 +1,113 @@
+{
+  "at": "2026-10-16T05:42:55.385458+00:00",
+  "authorizedRealSupplierSends": 2,
+  "actualRealSupplierSends": 2,
+  "syntheticPrimaryFailures": 1,
+  "additionalPaidSends": 0,
+  "qidongSunburst": {
+    "status": "succeeded",
+    "taskId": "5c20d183-beae-48a4-87e7-15a04ac82de8",
+    "pixels": [
+      1086,
+      1448
+    ],
+    "supplierBill": {
+      "requestId": "202610160538495962400658268d9d6oo68BFcH",
+      "model": "gpt-image-2.5-sunburst",
+      "accountDebitCNY": 0.03,
+      "source": "https://api.qidong.autos/api/log/token",
+      "snapshotSHA256": "d410baf11731e45983a944b3364f66dc88c9f0f84685186592c709fc04b36051"
+    }
+  },
+  "packyFlare": {
+    "status": "failed",
+    "taskId": "9b5514f2-9390-43fa-a85b-a5f7065adfe8",
+    "errorCode": "invalid_request",
+    "errorMessage": "上游返回 HTTP 400：Unknown parameter: 'response_format'. (request id: 01M51KJWTN6X6QSM51W7XTEZD4)",
+    "platformQuota": 0,
+    "supplierAmount": null,
+    "supplierBillingStatus": "pending_verification"
+  },
+  "attempts": [
+    {
+      "gatewayRequestId": "202610160538486566849768268d9d6p16VYNpA",
+      "supplierRequestId": "202610160538495962400658268d9d6oo68BFcH",
+      "supplier": "canvas-qidong-sunburst",
+      "model": "gpt-image-2.5-sunburst",
+      "attempt": 1,
+      "type": 2,
+      "platformQuota": 15000,
+      "httpStatus": 200,
+      "errorCode": null,
+      "supplierEstimate": {
+        "actual_status": "pending_verification",
+        "amount": "0.030000",
+        "basis": "per_image",
+        "currency": "CNY",
+        "source": "https://api.qidong.autos/api/pricing"
+      },
+      "supplierCharge": {
+        "amount": "0.030000",
+        "cash_paid_status": "unknown",
+        "currency": "CNY",
+        "model": "gpt-image-2.5-sunburst",
+        "quota": 15000,
+        "quota_per_unit": 500000,
+        "request_id": "202610160538495962400658268d9d6oo68BFcH",
+        "snapshot_sha256": "858f118611c11c46a0a0c4c36733404625afc64d2138280931cbbc0f9b3d3d69",
+        "source": "https://api.qidong.autos/api/log/token",
+        "status": "verified"
+      },
+      "synthetic": false
+    },
+    {
+      "gatewayRequestId": "202610160540008129802838268d9d6plVnFIQW",
+      "supplierRequestId": null,
+      "supplier": "canvas-qidong-flare",
+      "model": "gpt-image-2.5-flare",
+      "attempt": 1,
+      "type": 5,
+      "platformQuota": 0,
+      "httpStatus": 401,
+      "errorCode": "invalid_api_key",
+      "supplierEstimate": {
+        "actual_status": "pending_verification",
+        "amount": "0.030000",
+        "basis": "per_image",
+        "currency": "CNY",
+        "source": "https://api.qidong.autos/api/pricing"
+      },
+      "supplierCharge": null,
+      "synthetic": true
+    },
+    {
+      "gatewayRequestId": "202610160540008129802838268d9d6plVnFIQW",
+      "supplierRequestId": "01M51KJWTN6X6QSM51W7XTEZD4",
+      "supplier": "canvas-packy-flare",
+      "model": "gpt-image-2.5-flare",
+      "attempt": 2,
+      "type": 5,
+      "platformQuota": 0,
+      "httpStatus": 400,
+      "errorCode": "unknown_parameter",
+      "supplierEstimate": {
+        "actual_status": "pending_verification",
+        "amount": null,
+        "basis": "usage_dependent",
+        "currency": "USD",
+        "max": "3.557850",
+        "min": "0.029400",
+        "range_is_hard_cap": false,
+        "source": "https://www.packyapi.com/api/pricing"
+      },
+      "supplierCharge": null,
+      "synthetic": false
+    }
+  ],
+  "PackyBalanceUnchangedObserved": true,
+  "PackyTokenLogMessage": "record not found",
+  "balanceObservationDoesNotProveIndividualZeroDebit": true,
+  "paidStopGuardPresent": true,
+  "productionChanged": false,
+  "acceptanceContainersStopped": true
+}

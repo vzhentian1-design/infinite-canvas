@@ -1,0 +1,206 @@
+{
+  "at": "2026-10-16T05:53:22.907519+00:00",
+  "deployed": true,
+  "images": {
+    "new-api-personal": "sha256:adbd3f91f50b4e27d64aeac9b5edacc1fb429d71e2148f8eea73f7a99665bd19",
+    "canvas-migrated-api": "sha256:b0ad358fb014f5a055f9492484d5051366bf0ca1405ade352df6285f3b812283",
+    "canvas-migrated-app": "sha256:8823808ae9ec6e1c6d37f5d9363a4e9fdfcc9e53c313a293cb7ae85d37d719db"
+  },
+  "configuration": {
+    "models": [
+      {
+        "id": "364f4be2-b4b0-477a-ae7e-069fee4998be",
+        "name": "canvas-image",
+        "display_name": "GPT Image 2.5 Flare",
+        "sort_order": -100
+      },
+      {
+        "id": "689e1b16-f2fd-4315-b801-5d183cd7c952",
+        "name": "canvas-image-sunburst",
+        "display_name": "GPT Image 2.5 Sunburst",
+        "sort_order": -90
+      }
+    ],
+    "bindings": [
+      {
+        "model_id": "364f4be2-b4b0-477a-ae7e-069fee4998be",
+        "channel_id": "72215abc-7bf1-4ea9-8890-eaae8fead324",
+        "upstream_model": "canvas-image"
+      },
+      {
+        "model_id": "689e1b16-f2fd-4315-b801-5d183cd7c952",
+        "channel_id": "72215abc-7bf1-4ea9-8890-eaae8fead324",
+        "upstream_model": "canvas-image-sunburst"
+      }
+    ]
+  },
+  "channels": [
+    {
+      "id": 2,
+      "name": "canvas-qidong-flare",
+      "status": 1,
+      "models": "canvas-image",
+      "group": "canvas-image",
+      "priority": 100,
+      "model_mapping": "{\"canvas-image\": \"gpt-image-2.5-flare\"}"
+    },
+    {
+      "id": 3,
+      "name": "canvas-packy-flare",
+      "status": 1,
+      "models": "canvas-image",
+      "group": "canvas-image",
+      "priority": 10,
+      "model_mapping": "{\"canvas-image\": \"gpt-image-2.5-flare\"}"
+    },
+    {
+      "id": 4,
+      "name": "canvas-qidong-sunburst",
+      "status": 1,
+      "models": "canvas-image-sunburst",
+      "group": "canvas-image",
+      "priority": 100,
+      "model_mapping": "{\"canvas-image-sunburst\": \"gpt-image-2.5-sunburst\"}"
+    },
+    {
+      "id": 5,
+      "name": "canvas-packy-sunburst",
+      "status": 1,
+      "models": "canvas-image-sunburst",
+      "group": "canvas-image",
+      "priority": 10,
+      "model_mapping": "{\"canvas-image-sunburst\": \"gpt-image-2.5-sunburst\"}"
+    }
+  ],
+  "token": {
+    "id": 5,
+    "remain_quota": 455000,
+    "unlimited_quota": 0,
+    "model_limits": "canvas-image,canvas-image-sunburst"
+  },
+  "counts": {
+    "logs": 412,
+    "tasks": 261,
+    "images": 227,
+    "inflight": 0
+  },
+  "history": {
+    "total": 400,
+    "candidates": 272,
+    "unknown": 128
+  },
+  "protectedUnchanged": [
+    "canvas-migrated-postgres",
+    "canvas-migrated-minio",
+    "sw-new-api-rc39",
+    "dongyuan-trial-postgres"
+  ],
+  "rollbackContainers": [
+    "new-api-personal-pre-autofailover-20261016-r2",
+    "canvas-migrated-api-pre-autofailover-20261016-r2",
+    "canvas-migrated-app-pre-autofailover-20261016-r2"
+  ],
+  "rollbackDatabaseRestore": false,
+  "realSupplierSends": 3,
+  "successfulRealImages": 2,
+  "confirmedQidongCNY": 0.03,
+  "PackySupplierDebit": "pending_verification",
+  "employeeUi": "Production shared selector read back in existing admin browser session; only two options, Flare default, switched to Sunburst and back without generation; real acceptance used normal-user API in isolated Canvas DB",
+  "cooldownRecoveryEvidence": "24 free native scenarios; no extra paid probe",
+  "health": {
+    "https://canvas.dongyuanhub.com/": 200,
+    "http://127.0.0.1:13001/health": 200,
+    "http://127.0.0.1:3044/api/status": 200
+  },
+  "nativeModelDirectory200": true,
+  "pricesVerified": true,
+  "globalRetryTimes": 0,
+  "testContainersStopped": {
+    "canvas-af-paid-api": true,
+    "canvas-af-paid-gateway": true,
+    "canvas-af-paid-gateway-pre-protocolfix": true,
+    "canvas-af-protocol-free": true
+  },
+  "realAcceptance": {
+    "actualRealSupplierSends": 3,
+    "qidongSuccessful": 1,
+    "PackyRejected400": 1,
+    "PackySuccessfulAfterSeparateApproval": 1,
+    "qidongCNY": 0.03,
+    "PackyDebitStatus": "pending_verification",
+    "qidongTaskId": "5c20d183-beae-48a4-87e7-15a04ac82de8",
+    "PackyTaskId": "b0c8c32d-b686-421a-bc65-9b0b71e5c973",
+    "attempts": [
+      {
+        "case": "qidong",
+        "gatewayRequestId": "202610160538486566849768268d9d6p16VYNpA",
+        "supplierRequestId": "202610160538495962400658268d9d6oo68BFcH",
+        "supplier": "canvas-qidong-sunburst",
+        "model": "gpt-image-2.5-sunburst",
+        "attempt": 1,
+        "platformQuota": 15000,
+        "type": 2,
+        "supplierEstimate": {
+          "actual_status": "pending_verification",
+          "amount": "0.030000",
+          "basis": "per_image",
+          "currency": "CNY",
+          "source": "https://api.qidong.autos/api/pricing"
+        },
+        "supplierCharge": {
+          "amount": "0.030000",
+          "cash_paid_status": "unknown",
+          "currency": "CNY",
+          "model": "gpt-image-2.5-sunburst",
+          "quota": 15000,
+          "quota_per_unit": 500000,
+          "request_id": "202610160538495962400658268d9d6oo68BFcH",
+          "snapshot_sha256": "858f118611c11c46a0a0c4c36733404625afc64d2138280931cbbc0f9b3d3d69",
+          "source": "https://api.qidong.autos/api/log/token",
+          "status": "verified"
+        }
+      },
+      {
+        "case": "Packy-fixed",
+        "gatewayRequestId": "202610160545409982737128268d9d614bMmq7g",
+        "supplierRequestId": "01M51KXCAPYR76RGFM6VFT4YNK",
+        "supplier": "canvas-packy-flare",
+        "model": "gpt-image-2.5-flare",
+        "attempt": 2,
+        "platformQuota": 39753,
+        "type": 2,
+        "supplierEstimate": {
+          "actual_status": "pending_verification",
+          "amount": null,
+          "basis": "usage_dependent",
+          "currency": "USD",
+          "max": "3.557850",
+          "min": "0.029400",
+          "range_is_hard_cap": false,
+          "source": "https://www.packyapi.com/api/pricing"
+        },
+        "supplierCharge": null
+      },
+      {
+        "case": "Packy-fixed",
+        "gatewayRequestId": "202610160545409982737128268d9d614bMmq7g",
+        "supplierRequestId": null,
+        "supplier": "canvas-qidong-flare",
+        "model": "gpt-image-2.5-flare",
+        "attempt": 1,
+        "platformQuota": 0,
+        "type": 5,
+        "supplierEstimate": {
+          "actual_status": "pending_verification",
+          "amount": "0.030000",
+          "basis": "per_image",
+          "currency": "CNY",
+          "source": "https://api.qidong.autos/api/pricing"
+        },
+        "supplierCharge": null
+      }
+    ]
+  },
+  "gatewayBinarySha256": "9ad9b3c9968798cb388476e79b1feb673383dcb3c6ef37d0753e1597fb9ee53f",
+  "rollbackDryRun": "PASS"
+}

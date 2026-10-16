@@ -1,0 +1,859 @@
+{
+  "observedAt": "2026-10-16T05:43:39.418909+00:00",
+  "realSupplierRequests": 0,
+  "passed": 24,
+  "results": [
+    {
+      "case": "flare_healthy",
+      "http": 200,
+      "requestId": "202610160543260459267388268d9d6AHOtV69j",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543260459267388268d9d6AHOtV69j",
+          "upstream_request_id": "fixture-cad2f90a03ca4565b3425de081929bb1",
+          "type": 2,
+          "quota": 15000,
+          "channel": 2,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"2dceda14-5bdf-40ee-9095-a1a2c23cd9df\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_503_same_request_backup",
+      "http": 200,
+      "requestId": "202610160543263896970528268d9d60LnULHH7",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543263896970528268d9d60LnULHH7",
+          "upstream_request_id": "fixture-94ff7794b8c44aa99fcafcd87ec5d4a7",
+          "type": 2,
+          "quota": 14813,
+          "channel": 3,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"4473d45b-fa6c-4502-b000-469d184908c4\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-flare\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543263896970528268d9d60LnULHH7",
+          "upstream_request_id": "fixture-e2eb4c35b34f450eace2905517acf295",
+          "type": 5,
+          "quota": 0,
+          "channel": 2,
+          "other": "{\"canvas_task_id\":\"4473d45b-fa6c-4502-b000-469d184908c4\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_cooldown_routes_next",
+      "http": 200,
+      "requestId": "202610160543270158229368268d9d6YgREMDcz",
+      "calls": [
+        {
+          "supplier": "packy",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543270158229368268d9d6YgREMDcz",
+          "upstream_request_id": "fixture-e5b96127c98a44bb9d3e1155305237b6",
+          "type": 2,
+          "quota": 14813,
+          "channel": 3,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"978517b8-cfe5-442f-b0c7-426912d0199d\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-packy-flare\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_other_model_independent",
+      "http": 200,
+      "requestId": "202610160543272449781808268d9d6rE83VmBA",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543272449781808268d9d6rE83VmBA",
+          "upstream_request_id": "fixture-9597c1cca59e4c5c8aafd6dd2cced38b",
+          "type": 2,
+          "quota": 15000,
+          "channel": 4,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"2c56cdda-9cc5-45f6-804f-fd311d5fac2e\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_real_request_recovery",
+      "http": 200,
+      "requestId": "202610160543275849473668268d9d6CYpXR2a1",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543275849473668268d9d6CYpXR2a1",
+          "upstream_request_id": "fixture-2fa2f8f97e934945aba907bc9203dbc4",
+          "type": 2,
+          "quota": 15000,
+          "channel": 2,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"28557eab-8afe-4c7e-8851-2b033c946fd5\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_single_reference",
+      "http": 200,
+      "requestId": "202610160543279379329068268d9d6Nu9I8Gq5",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 1,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543279379329068268d9d6Nu9I8Gq5",
+          "upstream_request_id": "fixture-cb735b25610545dea6a267798879ee71",
+          "type": 2,
+          "quota": 15000,
+          "channel": 2,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"77eb05c2-5711-4a8f-8685-864dca057940\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/edits\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_dual_reference_backup",
+      "http": 200,
+      "requestId": "202610160543282404911778268d9d6v4D8fRKS",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 2,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": null,
+          "quality": "low",
+          "refs": 2,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543282404911778268d9d6v4D8fRKS",
+          "upstream_request_id": "fixture-dc55c838fda541b3b0d014d698900a50",
+          "type": 2,
+          "quota": 14813,
+          "channel": 3,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"b6dd635f-42d7-4f9a-b459-dba4c3feac3f\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-flare\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/edits\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543282404911778268d9d6v4D8fRKS",
+          "upstream_request_id": "fixture-aa69eba8772441d09cbff2668a53ae44",
+          "type": 5,
+          "quota": 0,
+          "channel": 2,
+          "other": "{\"canvas_task_id\":\"b6dd635f-42d7-4f9a-b459-dba4c3feac3f\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"request_path\":\"/v1/images/edits\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_safety_never_switches",
+      "http": 503,
+      "requestId": "202610160543288460774888268d9d6Jo8AWGRh",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543288460774888268d9d6Jo8AWGRh",
+          "upstream_request_id": "fixture-da69f0d803e34f7cbc7324903d00aa11",
+          "type": 5,
+          "quota": 0,
+          "channel": 2,
+          "other": "{\"canvas_task_id\":\"61cc7a34-d4a5-47dd-8ecf-d2a7cbe48d7d\",\"error_code\":\"content_policy_violation\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_400_never_switches",
+      "http": 400,
+      "requestId": "202610160543294418896978268d9d6xhDh2Wh4",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543294418896978268d9d6xhDh2Wh4",
+          "upstream_request_id": "fixture-3a884f2a8bdb4c27bbd89705dfd54d21",
+          "type": 5,
+          "quota": 0,
+          "channel": 2,
+          "other": "{\"canvas_task_id\":\"5a77d6fe-9b2f-4401-a4e4-199add8ce4a6\",\"error_code\":\"400\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"request_path\":\"/v1/images/generations\",\"status_code\":400,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_disconnect_backup",
+      "http": 200,
+      "requestId": "202610160543300532045548268d9d65WPFY0b9",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543300532045548268d9d65WPFY0b9",
+          "upstream_request_id": "fixture-b36b635962964f81aaf3be06266bc356",
+          "type": 2,
+          "quota": 14813,
+          "channel": 3,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"a3504f25-f57b-4ed6-b28f-880e7924120f\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-flare\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543300532045548268d9d65WPFY0b9",
+          "upstream_request_id": null,
+          "type": 5,
+          "quota": 0,
+          "channel": 2,
+          "other": "{\"canvas_task_id\":\"a3504f25-f57b-4ed6-b28f-880e7924120f\",\"error_code\":\"do_request_failed\",\"error_type\":\"new_api_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"request_path\":\"/v1/images/generations\",\"status_code\":500,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_both_fail_at_most_two",
+      "http": 503,
+      "requestId": "202610160543303106803268268d9d6bccaEjGg",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543303106803268268d9d6bccaEjGg",
+          "upstream_request_id": "fixture-40219410b5654d7ab2bdc5f041bdc27d",
+          "type": 5,
+          "quota": 0,
+          "channel": 3,
+          "other": "{\"canvas_task_id\":\"d64b0909-64d3-4eef-92b3-9f228ecf10c4\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":2,\"image_supplier\":\"canvas-packy-flare\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        },
+        {
+          "request_id": "202610160543303106803268268d9d6bccaEjGg",
+          "upstream_request_id": "fixture-9d8b49d08caa4b54b0bcd41e29e9aa03",
+          "type": 5,
+          "quota": 0,
+          "channel": 2,
+          "other": "{\"canvas_task_id\":\"d64b0909-64d3-4eef-92b3-9f228ecf10c4\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "flare_timeout_reserves_backup_time",
+      "http": 200,
+      "requestId": "202610160543313372929548268d9d6hiQBE5zC",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543313372929548268d9d6hiQBE5zC",
+          "upstream_request_id": "fixture-7dd5e86b313a4eac9eda31d342eac599",
+          "type": 2,
+          "quota": 14813,
+          "channel": 3,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"d8c340fa-3acd-417d-8923-78f94d874ee5\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-flare\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543313372929548268d9d6hiQBE5zC",
+          "upstream_request_id": null,
+          "type": 5,
+          "quota": 0,
+          "channel": 2,
+          "other": "{\"canvas_task_id\":\"d8c340fa-3acd-417d-8923-78f94d874ee5\",\"error_code\":\"do_request_failed\",\"error_type\":\"new_api_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"request_path\":\"/v1/images/generations\",\"status_code\":500,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_healthy",
+      "http": 200,
+      "requestId": "202610160543326713395248268d9d6UnoEC5tG",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543326713395248268d9d6UnoEC5tG",
+          "upstream_request_id": "fixture-7d0adbd33b2c4d79875dc4bc58cb3898",
+          "type": 2,
+          "quota": 15000,
+          "channel": 4,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"ca02aae0-0586-4f06-8d8c-03421a0b3537\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_503_same_request_backup",
+      "http": 200,
+      "requestId": "202610160543330043232268268d9d6BC07Wh4f",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543330043232268268d9d6BC07Wh4f",
+          "upstream_request_id": "fixture-6153062e2e444f42bce7b8cb1b602d74",
+          "type": 2,
+          "quota": 14813,
+          "channel": 5,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"abfe5070-ec6e-43ef-a20a-0a040e603ac9\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-sunburst\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543330043232268268d9d6BC07Wh4f",
+          "upstream_request_id": "fixture-a07e116b2ab446cbb380457fe919d6df",
+          "type": 5,
+          "quota": 0,
+          "channel": 4,
+          "other": "{\"canvas_task_id\":\"abfe5070-ec6e-43ef-a20a-0a040e603ac9\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_cooldown_routes_next",
+      "http": 200,
+      "requestId": "202610160543336439747598268d9d68C7EOwFh",
+      "calls": [
+        {
+          "supplier": "packy",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543336439747598268d9d68C7EOwFh",
+          "upstream_request_id": "fixture-8f13b027ac5b48abaa9ba1512f477e30",
+          "type": 2,
+          "quota": 14813,
+          "channel": 5,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"bcef17f8-99c0-4172-a088-f6d10de2d0e4\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-packy-sunburst\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_other_model_independent",
+      "http": 200,
+      "requestId": "202610160543338669276898268d9d6trfhSrES",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "flare",
+          "model": "gpt-image-2.5-flare",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543338669276898268d9d6trfhSrES",
+          "upstream_request_id": "fixture-12b06ee077274353b42c06ee47a6c192",
+          "type": 2,
+          "quota": 15000,
+          "channel": 2,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"f00b32af-677a-4074-a995-96aeab870926\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-flare\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-flare\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_real_request_recovery",
+      "http": 200,
+      "requestId": "202610160543342449985508268d9d6Z053Wmim",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543342449985508268d9d6Z053Wmim",
+          "upstream_request_id": "fixture-853690a96e394ff98f1079a5c1ecf9f3",
+          "type": 2,
+          "quota": 15000,
+          "channel": 4,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"07bf16ab-6737-429a-89b6-fb0d0eb9ddc7\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_single_reference",
+      "http": 200,
+      "requestId": "202610160543345379328188268d9d6DkFdM1yM",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 1,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543345379328188268d9d6DkFdM1yM",
+          "upstream_request_id": "fixture-4965fb4d722c4e44b4562f1fc6245103",
+          "type": 2,
+          "quota": 15000,
+          "channel": 4,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":0,\"cache_tokens\":0,\"canvas_task_id\":\"5e302268-fd80-4bf0-896e-05dfa03332ed\",\"completion_ratio\":0,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"standard\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"is_model_mapped\":true,\"model_price\":0.03,\"model_ratio\":0,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/edits\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_dual_reference_backup",
+      "http": 200,
+      "requestId": "202610160543348703234668268d9d6yJwh9w6O",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 2,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": null,
+          "quality": "low",
+          "refs": 2,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543348703234668268d9d6yJwh9w6O",
+          "upstream_request_id": "fixture-da1a9e844fb3403e9bf709aff754eaae",
+          "type": 2,
+          "quota": 14813,
+          "channel": 5,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"e8f8f649-56cf-465d-9a8e-f808e5dd9906\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-sunburst\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/edits\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543348703234668268d9d6yJwh9w6O",
+          "upstream_request_id": "fixture-67985e88b86c41aab9af83a27c19e94e",
+          "type": 5,
+          "quota": 0,
+          "channel": 4,
+          "other": "{\"canvas_task_id\":\"e8f8f649-56cf-465d-9a8e-f808e5dd9906\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"request_path\":\"/v1/images/edits\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_safety_never_switches",
+      "http": 503,
+      "requestId": "202610160543356916615958268d9d69JGXsWT3",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543356916615958268d9d69JGXsWT3",
+          "upstream_request_id": "fixture-059d70f6efbb4ff68bbf52aa1ece0c39",
+          "type": 5,
+          "quota": 0,
+          "channel": 4,
+          "other": "{\"canvas_task_id\":\"127e112e-fbe3-4772-8866-041a9b5abcb3\",\"error_code\":\"content_policy_violation\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_400_never_switches",
+      "http": 400,
+      "requestId": "202610160543362923531758268d9d6SLzI1AM9",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543362923531758268d9d6SLzI1AM9",
+          "upstream_request_id": "fixture-a894415870b748c4885524801328076a",
+          "type": 5,
+          "quota": 0,
+          "channel": 4,
+          "other": "{\"canvas_task_id\":\"623ebf04-3b7c-4fa9-acd4-f163e951555d\",\"error_code\":\"400\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"request_path\":\"/v1/images/generations\",\"status_code\":400,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_disconnect_backup",
+      "http": 200,
+      "requestId": "202610160543368835057808268d9d66fw4pdHc",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543368835057808268d9d66fw4pdHc",
+          "upstream_request_id": "fixture-4677e38ecdcd4baa978c650393611a03",
+          "type": 2,
+          "quota": 14813,
+          "channel": 5,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"30e11884-0cd9-4d2c-98d8-60aa74274016\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-sunburst\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543368835057808268d9d66fw4pdHc",
+          "upstream_request_id": null,
+          "type": 5,
+          "quota": 0,
+          "channel": 4,
+          "other": "{\"canvas_task_id\":\"30e11884-0cd9-4d2c-98d8-60aa74274016\",\"error_code\":\"do_request_failed\",\"error_type\":\"new_api_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"request_path\":\"/v1/images/generations\",\"status_code\":500,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_both_fail_at_most_two",
+      "http": 503,
+      "requestId": "202610160543371379386218268d9d6pl00HHmd",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543371379386218268d9d6pl00HHmd",
+          "upstream_request_id": "fixture-a77ea6a821bf48aebee49848f40fc7d2",
+          "type": 5,
+          "quota": 0,
+          "channel": 5,
+          "other": "{\"canvas_task_id\":\"11c3fd28-8090-4c03-b6d9-4eb790c24715\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":2,\"image_supplier\":\"canvas-packy-sunburst\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        },
+        {
+          "request_id": "202610160543371379386218268d9d6pl00HHmd",
+          "upstream_request_id": "fixture-86ec90f937254595a5a161a154a2493e",
+          "type": 5,
+          "quota": 0,
+          "channel": 4,
+          "other": "{\"canvas_task_id\":\"11c3fd28-8090-4c03-b6d9-4eb790c24715\",\"error_code\":\"503\",\"error_type\":\"openai_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"request_path\":\"/v1/images/generations\",\"status_code\":503,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "sunburst_timeout_reserves_backup_time",
+      "http": 200,
+      "requestId": "202610160543381543459028268d9d6LT7Mz1PN",
+      "calls": [
+        {
+          "supplier": "qidong",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": "b64_json",
+          "quality": null,
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        },
+        {
+          "supplier": "packy",
+          "variant": "sunburst",
+          "model": "gpt-image-2.5-sunburst",
+          "response_format": null,
+          "quality": "low",
+          "refs": 0,
+          "n": "1",
+          "size": "768x1024"
+        }
+      ],
+      "logs": [
+        {
+          "request_id": "202610160543381543459028268d9d6LT7Mz1PN",
+          "upstream_request_id": "fixture-70c34a38f27e4088bf8de7fed0519935",
+          "type": 2,
+          "quota": 14813,
+          "channel": 5,
+          "other": "{\"billing_source\":\"wallet\",\"cache_ratio\":1,\"cache_tokens\":0,\"canvas_task_id\":\"d4929340-af40-4944-b7ac-c3fc73156dc2\",\"completion_ratio\":6,\"content_parts\":[{\"key\":\"Size {{size}}\",\"params\":{\"size\":\"768x1024\"}},{\"key\":\"Quality {{quality}}\",\"params\":{\"quality\":\"low\"}},{\"key\":\"Image count {{count}}\",\"params\":{\"count\":1}}],\"frt\":-1000,\"group_ratio\":1,\"image_attempt\":2,\"image_supplier\":\"canvas-packy-sunburst\",\"is_model_mapped\":true,\"model_price\":-1,\"model_ratio\":12.5,\"request_conversion\":[\"openai_image\"],\"request_path\":\"/v1/images/generations\",\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":null,\"basis\":\"usage_dependent\",\"currency\":\"USD\",\"max\":\"3.557850\",\"min\":\"0.029400\",\"range_is_hard_cap\":false,\"source\":\"https://www.packyapi.com/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\",\"user_group_ratio\":-1}"
+        },
+        {
+          "request_id": "202610160543381543459028268d9d6LT7Mz1PN",
+          "upstream_request_id": null,
+          "type": 5,
+          "quota": 0,
+          "channel": 4,
+          "other": "{\"canvas_task_id\":\"d4929340-af40-4944-b7ac-c3fc73156dc2\",\"error_code\":\"do_request_failed\",\"error_type\":\"new_api_error\",\"image_attempt\":1,\"image_supplier\":\"canvas-qidong-sunburst\",\"request_path\":\"/v1/images/generations\",\"status_code\":500,\"supplier_estimate\":{\"actual_status\":\"pending_verification\",\"amount\":\"0.030000\",\"basis\":\"per_image\",\"currency\":\"CNY\",\"source\":\"https://api.qidong.autos/api/pricing\"},\"upstream_model_name\":\"gpt-image-2.5-sunburst\"}"
+        }
+      ],
+      "PASS": true
+    }
+  ]
+}
