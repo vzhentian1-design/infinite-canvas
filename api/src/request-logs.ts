@@ -1,4 +1,4 @@
-import { eq, lt, sql } from "drizzle-orm";
+import { and, eq, isNull, lt, sql } from "drizzle-orm";
 import { config } from "./config.js";
 import { db } from "./db/client.js";
 import { requestLogs } from "./db/schema.js";
@@ -18,6 +18,7 @@ export async function finishRequestLog(
   id: string | undefined,
   error?: { httpStatus?: number; category: string; message?: string },
   billedAmount?: string | null,
+  upstreamRequestId?: string,
 ) {
   if (!id) return;
   try {
@@ -27,6 +28,7 @@ export async function finishRequestLog(
         status: error ? "failed" : "succeeded",
         ...(error ? { httpStatus: error.httpStatus ?? null, errorCategory: error.category, errorMessage: error.message ?? null } : {}),
         ...(billedAmount !== undefined ? { billedAmount } : {}),
+        ...(upstreamRequestId ? { upstreamRequestId } : {}),
         finishedAt: new Date(),
         durationMs: sql`extract(epoch from (now() - ${requestLogs.startedAt})) * 1000`,
       })
@@ -39,6 +41,6 @@ export async function finishRequestLog(
 export async function cleanupOldRequestLogs() {
   const cutoff = new Date(Date.now() - config.REQUEST_LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000);
   // 只取影响行数，避免把 30 天的日志主键全部回传到进程内存。
-  const result = await db.delete(requestLogs).where(lt(requestLogs.startedAt, cutoff));
+  const result = await db.delete(requestLogs).where(and(lt(requestLogs.startedAt, cutoff), isNull(requestLogs.gatewayEvidence)));
   return result.count ?? 0;
 }

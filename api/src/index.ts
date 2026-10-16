@@ -7,6 +7,7 @@ import { ensureMediaBucket } from "./media.js";
 import { startOrphanCleanup, stopOrphanCleanup } from "./media-cleanup.js";
 import { startGenerationWorker, stopGenerationWorker } from "./generation-worker.js";
 import { cleanupOldRequestLogs } from "./request-logs.js";
+import { startNewApiSettlementSync } from "./newapi-settlement.js";
 
 await migrateDatabase();
 await ensureMediaBucket();
@@ -17,6 +18,7 @@ const orphanTimer = startOrphanCleanup((error, mediaId) => console.error("[media
 const cleanRequestLogs = () => void cleanupOldRequestLogs().catch((error) => console.error("[request-logs]", error));
 cleanRequestLogs();
 const requestLogTimer = setInterval(cleanRequestLogs, 24 * 60 * 60 * 1000);
+const settlementTimer = startNewApiSettlementSync();
 const cleanSessions = () => void cleanupExpiredSessions().catch((error) => console.error("[sessions]", error));
 cleanSessions();
 const sessionTimer = setInterval(cleanSessions, 24 * 60 * 60 * 1000);
@@ -25,6 +27,7 @@ const app = buildApp();
 const close = async () => {
   stopOrphanCleanup(orphanTimer);
   clearInterval(requestLogTimer);
+  clearInterval(settlementTimer);
   clearInterval(sessionTimer);
   await app.close();
   await stopGenerationWorker();

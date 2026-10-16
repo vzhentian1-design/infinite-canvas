@@ -99,7 +99,20 @@
       "when": 1789208400000,
       "tag": "0013_channel_capability",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792080000000,
+      "tag": "0014_image_cost_evidence",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1792119000000,
+      "tag": "0015_newapi_settlement",
+      "breakpoints": true
     }
   ]
 }
-

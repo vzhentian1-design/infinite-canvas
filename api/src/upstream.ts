@@ -160,8 +160,24 @@ async function upstreamJson(candidate: ChannelCandidate, url: string, init: Requ
   const timeout = setTimeout(() => controller.abort(), candidate.timeoutMs);
   try {
     const response = await fetch(url, { ...init, signal: controller.signal });
+    if (candidate.gateway) {
+      const gatewayId = response.headers.get("x-oneapi-request-id");
+      const supplierId = response.headers.get("x-upstream-request-id");
+      if (gatewayId && /^[a-zA-Z0-9_-]{1,64}$/.test(gatewayId)) {
+        candidate.gatewayRequestId = gatewayId;
+        if (supplierId && /^[a-zA-Z0-9_-]{1,200}$/.test(supplierId)) candidate.upstreamRequestId = supplierId;
+        await candidate.onGatewayReceipt?.(gatewayId, candidate.upstreamRequestId);
+      }
+    }
+    const requestId = response.headers.get("x-request-id") ?? response.headers.get("x-oneapi-request-id") ?? response.headers.get("x-upstream-request-id");
+    if (!candidate.gateway && requestId && requestId.length <= 200 && !/[\r\n]/.test(requestId) && !requestId.includes(candidate.apiKey || "\0")) candidate.upstreamRequestId = requestId;
     if (!response.ok) {
-      throw classifyHttp(response.status, await response.text(), candidate.apiKey);
+      const body = await response.text();
+      if (!candidate.gateway && !candidate.upstreamRequestId) {
+        const id = body.match(/request[ _]id["'\s:：]+([a-zA-Z0-9_-]{1,200})/i)?.[1];
+        if (id && !id.includes(candidate.apiKey || "\0")) candidate.upstreamRequestId = id;
+      }
+      throw classifyHttp(response.status, body, candidate.apiKey);
     }
     const payload = await response.json();
     if (hasContentPolicyRefusal(payload)) throw contentPolicyError(response.status);
@@ -333,7 +349,8 @@ export async function generateImage(
 ) {
   if (candidate.protocol === "openai") {
     const safeParameters = openAIParameters(parameters, ["model", "prompt", "n", "response_format", "image", "image[]"]);
-    const headers = candidate.apiKey ? { Authorization: `Bearer ${candidate.apiKey}` } : undefined;
+      const headers: Record<string, string> = candidate.apiKey ? { Authorization: `Bearer ${candidate.apiKey}` } : {};
+      if (candidate.gateway && candidate.taskId) headers["X-Canvas-Task-Id"] = candidate.taskId;
     if (references.length) {
       const isGptImage = /^(gpt-image|image-2)/i.test(candidate.upstreamModel);
       const form = new FormData();

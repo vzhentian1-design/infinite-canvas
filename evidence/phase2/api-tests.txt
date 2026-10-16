@@ -1,0 +1,113 @@
+
+> infinite-canvas-api@0.1.0 test
+> node --experimental-test-module-mocks --import tsx --test test/*.test.mjs
+
+(node:44616) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44616) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ removing a current image preserves the file held by a restorable history (121.586ms)
+✔ an existing canvas remains saveable after its public source asset is withdrawn (63.5411ms)
+✔ a private media ID in a new snapshot does not grant access (40.1244ms)
+✔ a missing or deleted media ID in a snapshot does not block canvas saving (26.8771ms)
+✔ a snapshot re-referencing deleting media revives it to ready status (29.2546ms)
+✔ private image caches revalidate permissions before returning 304 (35.3745ms)
+✔ historical references retain withdrawn public media access and prevent cleanup (104.7383ms)
+✔ restoring the oldest of twenty histories claims its media before trimming (146.5865ms)
+✔ trimming the final history releases its media (114.9917ms)
+✔ deleting a project also releases all of its historical media references (45.3106ms)
+✔ failed MinIO cleanup retains metadata and retries without the orphan grace period (32.8163ms)
+✔ partial MinIO deletion failures also retain retryable metadata (22.1657ms)
+✔ existing history backfill follows reference extraction without changing snapshots (1136.5003ms)
+(node:47428) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:47428) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ retryable HTTP failures move through priority order and persist channel cooldowns (70.2903ms)
+✔ network and timeout failures reach an available lower-priority channel (38.3275ms)
+✔ candidate filtering and weights preserve priority groups (37.1621ms)
+✔ ambiguous failures permit only one additional channel (27.8728ms)
+✔ invalid_request stops failover without cooling a healthy channel (29.5058ms)
+✔ content_policy stops failover without cooling a healthy channel (24.4867ms)
+✔ channel slots cap concurrency and are released after errors (30.323ms)
+✔ the existing slot wait budget falls back and removes its expired waiter (1039.7876ms)
+✔ auth cooldown preserves the five-minute minimum and a longer configured duration (28.1697ms)
+✔ a queued request skips a channel that became disabled (22.2991ms)
+✔ a queued request skips a channel that became cooling (17.7647ms)
+✔ a queued request skips a channel that became unbound (16.4421ms)
+✔ a failed primary publishes its cooldown before another queued request can call it (23.6074ms)
+✔ a late success does not erase a newer failure and cooldown (23.4644ms)
+✔ health bookkeeping failure after success cannot trigger another generation (13.3591ms)
+✔ health bookkeeping failure cannot stop an eligible fallback (13.6486ms)
+✔ cooldown expiry permits recovery and clears the previous error (17.495ms)
+✔ soft-deleted channels are ignored by the scheduler (15.8944ms)
+(node:2452) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2452) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+(node:2452) DeprecationWarning: mock.module(): options.defaultExport is deprecated. Use options.exports.default instead.
+✔ a failed attempt write preserves a non-retryable upstream error without another paid call (107.6004ms)
+✔ unwritable request log prevents a paid image send (61.7119ms)
+✔ fallback stores one paid result and closes both attempts (66.4996ms)
+✔ fallback stores one paid result and closes both attempts after a failed attempt write (64.0218ms)
+✔ exhausted fallback preserves the final upstream failure and leaves no running records (58.3645ms)
+✔ MinIO failure after upstream success does not generate again or leave a running attempt (52.2397ms)
+✔ metadata failure after upstream success rolls back billing and removes the stored object (47.2934ms)
+✔ persistent attempt bookkeeping failure still preserves the original non-retryable result (49.6566ms)
+✔ image 503 closes one attempt without dispatching backup (45.6494ms)
+✔ restart fails an interrupted image task instead of requeueing it (33.687ms)
+﹣ UUID aliases preserve request and canvas consistency (1.004ms) # SKIP
+(node:34176) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34176) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+(node:34176) [FSTDEP022] FastifyWarning: The router options for ignoreTrailingSlash property access is deprecated. Please use "options.routerOptions" instead for accessing router options. The router options will be removed in `fastify@6`.
+✔ production sessions are secure and browser mutations validate their origin (47.7629ms)
+✔ a concurrent login burst with forged forwarding headers cannot bypass the existing window (13.083ms)
+(node:49064) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49064) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ admin logs preserve supplier identity and estimates without treating legacy billing as cash (63.3169ms)
+✔ ambiguous image failure cannot be retried through the existing endpoint (36.0463ms)
+✔ text retries claim the request once and do not duplicate messages (96.4424ms)
+✔ changed payload cannot reuse a failed text request (52.4919ms)
+✔ follow-up text retains historical images in their original order and system role (113.9626ms)
+✔ concurrent image submissions and retries share the existing user capacity (61.1723ms)
+(node:47180) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:47180) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ image http_503 never sends a second paid request (45.9616ms)
+✔ image http_429 never sends a second paid request (25.6818ms)
+✔ image http_403 never sends a second paid request (27.7508ms)
+✔ image timeout never sends a second paid request (28.6868ms)
+✔ image network never sends a second paid request (27.6937ms)
+✔ image invalid_response never sends a second paid request (21.2447ms)
+✔ image content_policy never sends a second paid request (21.0348ms)
+✔ auth fallback is bounded to two attempts; expired cooldown restores primary priority (27.9351ms)
+✔ estimates follow actual supplier; absent estimates and actual charges remain unknown (24.9708ms)
+✔ generation and multi-reference edit preserve model, size, quality, n=1, and request IDs (18.6598ms)
+(node:48240) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48240) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ successful text replay returns the full response even while the channel is unavailable (246.639ms)
+✔ Gemini HTTP-200 prompt and candidate safety refusals never fail over for image or text (16.644ms)
+✔ OpenAI HTTP-200 refusal and content-filter results stop text failover (1.1486ms)
+✔ HTTP errors distinguish explicit policy refusals from safety-service outages (5.4994ms)
+✔ null and malformed text envelopes consistently allow one fallback without TypeError (2.3236ms)
+✔ valid image and text outputs retain decoding, system roles, and reasoning parameters (3.5542ms)
+✔ transport errors and invalid JSON keep their existing failover classifications (2.8752ms)
+✔ rejects mapped IPv6 private addresses before opening a connection (10.5786ms)
+✔ connects to the same public address that passed DNS validation (5.8396ms)
+✔ rejects a DNS result containing both public and private addresses (1.2908ms)
+✔ validates redirected destinations before following them (1.3469ms)
+✔ still downloads public IPv4 and IPv6 literal destinations (3.4794ms)
+✔ enforces the existing download byte limit with and without Content-Length (1.6063ms)
+✔ stops after the existing four redirect hops (1.1086ms)
+✔ explicit private-host opt-in still downloads bytes from a local gateway (21.5325ms)
+✔ redacts reflected channel credentials before truncating upstream errors (5.9662ms)
+✔ redacts JSON-escaped channel credentials (1.1873ms)
+✔ redacts credentials decoded from alternate JSON escapes (2.8058ms)
+ℹ tests 78
+ℹ suites 0
+ℹ pass 77
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 7286.0789

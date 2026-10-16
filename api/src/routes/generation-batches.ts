@@ -10,12 +10,14 @@ import {
   generatedImages,
   generationBatchMedia,
   generationBatches,
+  generationAttempts,
   generationTasks,
   mediaObjects,
   models,
 } from "../db/schema.js";
 import { enqueueGenerationTask } from "../generation-worker.js";
 import { hasChannelCandidates } from "../channel-scheduler.js";
+import { isUnknownImageOutcome } from "../image-cost.js";
 import { removeUnreferencedMedia } from "../media-cleanup.js";
 
 const paramsSchema = z.object({ id: z.string().uuid() });
@@ -33,6 +35,7 @@ const createBody = z.object({
 import { config } from "../config.js";
 
 class ActiveTaskLimitError extends Error {}
+class UnreconciledImageError extends Error {}
 
 async function checkUserTaskCapacity(tx: Parameters<Parameters<typeof db.transaction>[0]>[0], userId: string, count: number) {
   const maxActiveTasks = 50;
@@ -371,6 +374,12 @@ export async function generationBatchRoutes(app: FastifyInstance) {
           .limit(1);
         if (!candidate) return undefined;
         await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${candidate.batchId}::text, 0))`);
+        const [current] = await tx.select({ status: generationTasks.status, errorCode: generationTasks.errorCode })
+          .from(generationTasks).where(eq(generationTasks.id, taskId)).limit(1);
+        if (current?.status === "failed" && isUnknownImageOutcome(current.errorCode)) throw new UnreconciledImageError();
+        const attempts = await tx.select({ status: generationAttempts.status, errorCategory: generationAttempts.errorCategory })
+          .from(generationAttempts).where(eq(generationAttempts.taskId, taskId));
+        if (attempts.some((attempt) => attempt.status === "running" || (attempt.status === "failed" && isUnknownImageOutcome(attempt.errorCategory)))) throw new UnreconciledImageError();
         const [retried] = await tx
           .update(generationTasks)
           .set({ status: "queued", queuedAt: new Date(), startedAt: null, finishedAt: null, errorCode: null, errorMessage: null })
@@ -379,6 +388,7 @@ export async function generationBatchRoutes(app: FastifyInstance) {
         return retried;
       });
     } catch (error) {
+      if (error instanceof UnreconciledImageError) return reply.code(409).send({ error: "billing_unknown", message: "原请求结果或扣费未知，已暂停重试；请管理员先核对供应商日志和账单，确认后再决定是否新建任务" });
       if (error instanceof ActiveTaskLimitError) return reply.code(429).send({ error: "too_many_active_tasks", message: error.message });
       throw error;
     }

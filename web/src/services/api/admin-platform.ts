@@ -155,6 +155,13 @@ export type BillingHistorySummary = {
 };
 
 export type RequestLog = {
+    gatewayRequestId?: string | null;
+    gatewayEvidence?: { status: "pending" | "settled" | "unknown"; quota: number | null; quotaPerUnit: number; providerChannelId: number | null; providerName: string | null; providerModel: string | null; supplierRequestId: string | null; supplierSettlementStatus: "pending_verification" | "verified_account_debit"; supplierAmount: string | null; supplierCurrency: string | null } | null;
+    upstreamRequestId?: string | null;
+    generationOutcome?: "succeeded" | "failed" | "pending" | "unknown";
+    platformEstimate?: { amount: string; currency: string; source: string } | null;
+    supplierSettlementStatus?: "unknown";
+    supplierActualAmount?: string | null;
     id: string;
     userId: string | null;
     username: string | null;

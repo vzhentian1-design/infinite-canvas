@@ -5,6 +5,7 @@ import { authenticate } from "../auth/session.js";
 import { db } from "../db/client.js";
 import { requestLogs, users } from "../db/schema.js";
 import { attachBillingHistory, loadBillingHistory, queryBillingHistory } from "../billing-history.js";
+import { imageCostEvidence } from "../image-cost.js";
 
 const querySchema = z.object({
   from: z.string().datetime({ offset: true }).optional(),
@@ -56,6 +57,10 @@ export async function adminRequestLogRoutes(app: FastifyInstance) {
         errorCategory: requestLogs.errorCategory,
         errorMessage: requestLogs.errorMessage,
         billedAmount: requestLogs.billedAmount,
+        upstreamRequestId: requestLogs.upstreamRequestId,
+        gatewayRequestId: requestLogs.gatewayRequestId,
+        gatewayEvidence: requestLogs.gatewayEvidence,
+        estimateSnapshot: requestLogs.estimateSnapshot,
         startedAt: requestLogs.startedAt,
         finishedAt: requestLogs.finishedAt,
         durationMs: requestLogs.durationMs,
@@ -70,11 +75,12 @@ export async function adminRequestLogRoutes(app: FastifyInstance) {
       .select({ total: sql<number>`count(*)::int` })
       .from(requestLogs)
       .where(where);
+    const evidenceRows = rows.map((row) => ({ ...row, ...(row.type === "image" ? imageCostEvidence(row) : {}) }));
     reply.header("Cache-Control", "no-store");
     try {
-      return { logs: attachBillingHistory(rows, loadBillingHistory()), total: totals?.total ?? 0 };
+      return { logs: attachBillingHistory(evidenceRows, loadBillingHistory()), total: totals?.total ?? 0 };
     } catch {
-      return { logs: rows, total: totals?.total ?? 0, billingHistoryUnavailable: true };
+      return { logs: evidenceRows, total: totals?.total ?? 0, billingHistoryUnavailable: true };
     }
   });
 

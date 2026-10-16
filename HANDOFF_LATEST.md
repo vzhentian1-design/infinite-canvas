@@ -97,3 +97,4 @@ Packy 当前公开模型详情将 gpt-image-2 / 2.5-flare / 2.5-sunburst 列为 
 ## Notion 与交付责任
 
 [Canvas 项目入口](https://app.notion.com/p/3face9f11b9b81bf9b80d5ec21f22085) · [New API 项目入口](https://app.notion.com/p/3face9f11b9b8154bcdfcf48c824f33e)。统一总目录复用既有「项目」数据库，以每项目一个入口串联代码/域名/版本/里程碑/证据/遗留/下一步；已有「东元 Studio｜项目入口」保留原位链接，未重建档案。资产盘点与清理建议见同仓库 `ASSET_INVENTORY_20261016.md`；未获得删除授权，不执行清理。阶段一在此停止，后续路线及新的付费验收由 Owner 裁决。
+

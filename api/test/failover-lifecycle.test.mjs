@@ -9,10 +9,11 @@ const { client, db } = await createTestDatabase();
 const userId = randomUUID(), modelId = randomUUID();
 const channelIds = [randomUUID(), randomUUID()];
 const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aRZkAAAAASUVORK5CYII=", "base64");
-let worker, failAttemptWrite = false, failStorage = false;
+let worker, failAttemptWrite = false, failStorage = false, failLogWrite = false;
 let calls = [], outcomes = new Map(), objects = new Map();
 const query = client.query.bind(client);
 mock.method(client, "query", async (sql, params, ...rest) => {
+  if (failLogWrite && /^insert into "request_logs"/.test(sql)) throw new Error("fixture log write failed");
   if (failAttemptWrite && /^update "generation_attempts"/.test(sql) && params[0] === "failed") {
     if (failAttemptWrite !== "always") failAttemptWrite = false;
     throw new Error("fixture attempt update failed");
@@ -51,7 +52,7 @@ beforeEach(async () => {
   await db.insert(schema.models).values({ id: modelId, name: "image", displayName: "Image", capability: "image", status: "published", pricePerImage: "1.25" });
   await db.insert(schema.channels).values(channelIds.map((id, index) => ({ id, name: `channel-${index}`, protocol: "openai", baseUrl: "https://invalid.invalid", status: "active" })));
   await db.insert(schema.modelChannels).values(channelIds.map((channelId, index) => ({ modelId, channelId, upstreamModel: "image", priority: 100 - index, weight: 1, enabled: true })));
-  calls = []; outcomes = new Map(); objects = new Map(); failAttemptWrite = false; failStorage = false;
+  calls = []; outcomes = new Map(); objects = new Map(); failAttemptWrite = false; failStorage = false; failLogWrite = false;
 });
 
 async function runTask() {
@@ -81,9 +82,18 @@ test("a failed attempt write preserves a non-retryable upstream error without an
   assert.equal(objects.size, 0);
 });
 
+test("unwritable request log prevents a paid image send", async () => {
+  failLogWrite = true;
+  const result = await runTask();
+  assert.equal(calls.length, 0);
+  assert.equal(result.task.errorCode, "audit_unavailable");
+  assert.equal(result.attempts[0].status, "failed");
+  assert.equal(result.images.length, 0);
+});
+
 for (const failedWrite of [false, true]) {
   test(`fallback stores one paid result and closes both attempts${failedWrite ? " after a failed attempt write" : ""}`, async () => {
-    outcomes.set(channelIds[0], new UpstreamError("fixture unavailable", "http_503", 503, "always"));
+    outcomes.set(channelIds[0], new UpstreamError("fixture invalid credential", "http_401", 401, "always"));
     failAttemptWrite = failedWrite;
     const result = await runTask();
     assert.deepEqual(calls, channelIds);
@@ -117,12 +127,12 @@ function assertUnbilledFailure(result, errorCode) {
 }
 
 test("exhausted fallback preserves the final upstream failure and leaves no running records", async () => {
-  outcomes.set(channelIds[0], new UpstreamError("fixture unavailable", "http_503", 503, "always"));
+  outcomes.set(channelIds[0], new UpstreamError("fixture invalid credential", "http_401", 401, "always"));
   outcomes.set(channelIds[1], new UpstreamError("fixture invalid credential", "http_401", 401, "always"));
   const result = await runTask();
   assert.deepEqual(calls, channelIds);
   assertUnbilledFailure(result, "http_401");
-  assert.deepEqual(result.attempts.map((attempt) => attempt.errorCategory).sort(), ["http_401", "http_503"]);
+  assert.deepEqual(result.attempts.map((attempt) => attempt.errorCategory).sort(), ["http_401", "http_401"]);
 });
 
 test("MinIO failure after upstream success does not generate again or leave a running attempt", async () => {
@@ -167,4 +177,22 @@ test("persistent attempt bookkeeping failure still preserves the original non-re
   } finally {
     warning.mock.restore();
   }
+});
+
+test("image 503 closes one attempt without dispatching backup", async () => {
+  outcomes.set(channelIds[0], new UpstreamError("fixture unavailable", "http_503", 503, "always"));
+  const result = await runTask();
+  assert.deepEqual(calls, [channelIds[0]]);
+  assertUnbilledFailure(result, "http_503");
+});
+
+test("restart fails an interrupted image task instead of requeueing it", async () => {
+  const [batch] = await db.insert(schema.generationBatches).values({ userId, modelId, prompt: "test", requestedCount: 1 }).returning();
+  const [task] = await db.insert(schema.generationTasks).values({ batchId: batch.id, userId, modelId, sequence: 0, prompt: "test", status: "running" }).returning();
+  await startGenerationWorker();
+  const [saved] = await db.select().from(schema.generationTasks).where(eq(schema.generationTasks.id, task.id));
+  assert.equal(saved.status, "failed");
+  assert.equal(saved.errorCode, "worker_restart_unknown");
+  await worker([{ data: { taskId: task.id } }]);
+  assert.equal(calls.length, 0);
 });
