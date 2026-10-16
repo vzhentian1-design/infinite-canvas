@@ -1,0 +1,158 @@
+{
+  "realSupplierRequests": 0,
+  "results": [
+    {
+      "case": "healthy_primary",
+      "http": 200,
+      "calls": [
+        {
+          "provider": "primary",
+          "path": "/primary/v1/images/generations",
+          "model": "gpt-image-2.5-flare",
+          "quality": null,
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "503_stops_current_request",
+      "http": 503,
+      "calls": [
+        {
+          "provider": "primary",
+          "path": "/primary/v1/images/generations",
+          "model": "gpt-image-2.5-flare",
+          "quality": null,
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "next_task_uses_backup_during_cooldown",
+      "http": 200,
+      "calls": [
+        {
+          "provider": "backup",
+          "path": "/backup/v1/images/generations",
+          "model": "gpt-image-2",
+          "quality": "low",
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "recovered_primary_has_priority",
+      "http": 200,
+      "calls": [
+        {
+          "provider": "primary",
+          "path": "/primary/v1/images/generations",
+          "model": "gpt-image-2.5-flare",
+          "quality": null,
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "explicit_401_allows_one_backup",
+      "http": 200,
+      "calls": [
+        {
+          "provider": "primary",
+          "path": "/primary/v1/images/generations",
+          "model": "gpt-image-2.5-flare",
+          "quality": null,
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        },
+        {
+          "provider": "backup",
+          "path": "/backup/v1/images/generations",
+          "model": "gpt-image-2",
+          "quality": "low",
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "single_reference_edit",
+      "http": 200,
+      "calls": [
+        {
+          "provider": "primary",
+          "path": "/primary/v1/images/edits",
+          "model": "gpt-image-2.5-flare",
+          "quality": null,
+          "n": "1",
+          "size": "768x1024",
+          "references": 1
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "multiple_reference_edit",
+      "http": 200,
+      "calls": [
+        {
+          "provider": "primary",
+          "path": "/primary/v1/images/edits",
+          "model": "gpt-image-2.5-flare",
+          "quality": null,
+          "n": "1",
+          "size": "768x1024",
+          "references": 2
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "disconnect_never_replays",
+      "http": 500,
+      "calls": [
+        {
+          "provider": "primary",
+          "path": "/primary/v1/images/generations",
+          "model": "gpt-image-2.5-flare",
+          "quality": null,
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        }
+      ],
+      "PASS": true
+    },
+    {
+      "case": "after_disconnect_next_task_uses_backup",
+      "http": 200,
+      "calls": [
+        {
+          "provider": "backup",
+          "path": "/backup/v1/images/generations",
+          "model": "gpt-image-2",
+          "quality": "low",
+          "n": "1",
+          "size": "768x1024",
+          "references": 0
+        }
+      ],
+      "PASS": true
+    }
+  ]
+}

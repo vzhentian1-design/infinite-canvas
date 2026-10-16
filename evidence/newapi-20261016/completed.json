@@ -1,0 +1,56 @@
+{
+  "releasedAt": "2026-10-16T03:46:24.335662+00:00",
+  "canvasApiImage": "sha256:0c52a756f4b2334a57703ea02a1c65b7ac01eb3bbe91abaa6b1db6b83dfad53e",
+  "canvasWebImage": "sha256:b2e675e8ff56d6ede8b18b15ebb9bc5106799f6950224337c6f0e2f3d76d280d",
+  "newApiImage": "sha256:3bc14a11c4b90bd9e913e4b26be7b5c5c5f2c15514352d6d8c80a03a674c3138",
+  "configuration": {
+    "channelId": "72215abc-7bf1-4ea9-8890-eaae8fead324",
+    "modelId": "364f4be2-b4b0-477a-ae7e-069fee4998be"
+  },
+  "published": {
+    "published": [
+      {
+        "id": "364f4be2-b4b0-477a-ae7e-069fee4998be",
+        "display_name": "AI生图 / 改图"
+      }
+    ]
+  },
+  "counts": {
+    "logs": 412,
+    "tasks": 261,
+    "images": 227,
+    "inflight": 0
+  },
+  "history": {
+    "total": 400,
+    "importId": "canvas-history-20261016-v1",
+    "importedAt": "2026-10-15T20:43:02.075Z",
+    "snapshotAt": "2026-10-15T20:21:04.701Z",
+    "matchingMethod": "同模型；结束时间相差不超过 3 秒（统一 UTC/北京时间）；耗时相差不超过 5 秒；供应商记录与 Canvas 请求双向唯一。缺少上游请求 ID，仅为候选关联。",
+    "importedCount": 400,
+    "candidateCount": 272,
+    "unknownCount": 128,
+    "candidateTotals": {
+      "USD": "4.532464",
+      "CNY": "6.000000"
+    }
+  },
+  "protectedUnchanged": [
+    "sw-new-api-rc39",
+    "dongyuan-trial-postgres",
+    "canvas-migrated-postgres",
+    "canvas-migrated-minio"
+  ],
+  "realAcceptanceCalls": 3,
+  "supplierAccountDebitCNY": 0.09,
+  "packyEnabled": false,
+  "businessAcceptance": "awaiting_owner",
+  "productionNativeConnection": {
+    "nativeConnection": 200,
+    "models": [
+      "canvas-image"
+    ]
+  },
+  "anonymousHistoryHTTP": 401,
+  "acceptanceContainersStopped": true
+}

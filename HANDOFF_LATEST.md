@@ -1,3 +1,12 @@
+# 当前有效状态：齐东经 New API 统一生图已上线
+
+2026-10-16 11:46 北京时间：Canvas → 个人New API补丁rc44 → 齐东gpt-image-2.5-flare，正式入口 https://canvas.dongyuanhub.com/ ，员工模型「AI生图 / 改图」。真实生成/单图编辑/双图编辑3次均为3:4成功、各供应商账户扣费CNY0.03，总0.09；无第四次付费发送。Packy按Owner本轮要求保持关闭。历史400账单、412日志/261任务/227图片保留。rc39和Studio未改。
+
+实现提交：Canvas 3463f2f，New API 221e1b4；分支integration/newapi-images / integration/canvas-images-rc44。完整线上镜像、精确请求/费用、已开发/已测试/已上线/业务验收状态和回滚在 `D:/AI/codex项目/无限画布/canvas-newapi-worktree/RESULT_NEWAPI_20261016.md`。员工业务通过尚待Owner确认；完整多供应商自动主备未开放。验收容器已停止，正式业务worker按需运行，无待执行测试发送。
+
+以下为历史记录，其中“仍直连”“未迁移”“齐东排除所有候选”与旧阶段停止/预算不再作为当前指令；旧gpt-image-2-qidong仍排除，历史账单证据继续有效。
+
+---
 # Canvas 当前交接：历史账单已接入
 
 本分支 `feat/canvas-historical-billing` 已将历史账单接入[原请求列表](https://canvas.dongyuanhub.com/admin/logs)，费用列直接关联并显示已导入的候选金额和账单详情；[独立历史视图](https://canvas.dongyuanhub.com/admin/logs?view=history)继续保留。400 条历史图片调用、272 条候选关联、128 条待核；候选扣费分别为 USD 4.532464 / CNY 6.000000，不是已确认实付。
@@ -97,4 +106,3 @@ Packy 当前公开模型详情将 gpt-image-2 / 2.5-flare / 2.5-sunburst 列为 
 ## Notion 与交付责任
 
 [Canvas 项目入口](https://app.notion.com/p/3face9f11b9b81bf9b80d5ec21f22085) · [New API 项目入口](https://app.notion.com/p/3face9f11b9b8154bcdfcf48c824f33e)。统一总目录复用既有「项目」数据库，以每项目一个入口串联代码/域名/版本/里程碑/证据/遗留/下一步；已有「东元 Studio｜项目入口」保留原位链接，未重建档案。资产盘点与清理建议见同仓库 `ASSET_INVENTORY_20261016.md`；未获得删除授权，不执行清理。阶段一在此停止，后续路线及新的付费验收由 Owner 裁决。
-

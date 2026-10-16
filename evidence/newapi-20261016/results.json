@@ -1,0 +1,236 @@
+[
+  {
+    "operation": "generation",
+    "taskId": "013a7e35-561f-4e44-9f3c-ea8f1d10c640",
+    "batchId": "4ae5313a-d3f0-4971-9567-100bedd5051d",
+    "referenceCount": 0,
+    "status": "succeeded",
+    "task": {
+      "id": "013a7e35-561f-4e44-9f3c-ea8f1d10c640",
+      "batchId": "4ae5313a-d3f0-4971-9567-100bedd5051d",
+      "status": "succeeded",
+      "sequence": 0,
+      "errorCode": null,
+      "errorMessage": null,
+      "queuedAt": "2026-10-16T03:36:53.465Z",
+      "startedAt": "2026-10-16T03:36:53.693Z",
+      "finishedAt": "2026-10-16T03:37:23.186Z",
+      "modelName": "canvas-image",
+      "modelDisplayName": "AI生图 / 改图",
+      "image": {
+        "mediaId": "390ed13a-e8e7-4430-b546-61cad220978b",
+        "url": "/api/media/390ed13a-e8e7-4430-b546-61cad220978b",
+        "mimeType": "image/png",
+        "bytes": 1869297,
+        "width": 1086,
+        "height": 1448,
+        "isSaved": false
+      }
+    },
+    "imageSHA256": "8447948dbd36d91033659763b1890d6f7016bf44dfbb395a1cabe7c9757d47d7",
+    "canvasLog": {
+      "id": "7ddcf45e-3c85-4c89-99dc-d5d49c1fe86d",
+      "task_id": "013a7e35-561f-4e44-9f3c-ea8f1d10c640",
+      "gateway_request_id": "202610160336537090925178268d9d62OpsPuIg",
+      "upstream_request_id": null,
+      "gateway_evidence": {
+        "quota": null,
+        "status": "pending",
+        "checkedAt": "2026-10-16T03:36:53.704Z",
+        "requestId": null,
+        "providerName": null,
+        "quotaPerUnit": 500000,
+        "providerModel": null,
+        "supplierAmount": null,
+        "supplierCurrency": null,
+        "providerChannelId": null,
+        "supplierRequestId": null,
+        "supplierSettlementStatus": "pending_verification"
+      }
+    },
+    "newApi": {
+      "request_id": "202610160336537090925178268d9d62OpsPuIg",
+      "upstream_request_id": "202610160336540916951168268d9d6NiRA4LyZ",
+      "channel": 2,
+      "model_name": "canvas-image",
+      "quota": 15000,
+      "created_at": 1792121843
+    },
+    "supplierBill": {
+      "requestId": "202610160336540916951168268d9d6NiRA4LyZ",
+      "model": "gpt-image-2.5-flare",
+      "quota": 15000,
+      "accountDebitCNY": 0.03,
+      "source": "https://api.qidong.autos/api/log/token",
+      "cashPaidStatus": "unknown",
+      "snapshotSHA256": "bc810f3846ebd45ab0c86c50652ad7b3ec4e80d080b3455471567e078b89f1a4"
+    },
+    "supplierChargeInGatewayLog": {
+      "amount": "0.030000",
+      "cash_paid_status": "unknown",
+      "currency": "CNY",
+      "quota": 15000,
+      "quota_per_unit": 500000,
+      "request_id": "202610160336540916951168268d9d6NiRA4LyZ",
+      "snapshot_sha256": "51e29447e60d4704b2dc9f89d22e37324aa362eb0be456db39fa4fb08d8b187b",
+      "source": "https://api.qidong.autos/api/log/token",
+      "status": "verified"
+    }
+  },
+  {
+    "operation": "single-edit",
+    "taskId": "592015b9-caf4-4606-96c4-b7e5295c4257",
+    "batchId": "b8257d6b-ee19-4db1-b82d-afc042e3bf36",
+    "referenceCount": 1,
+    "status": "succeeded",
+    "task": {
+      "id": "592015b9-caf4-4606-96c4-b7e5295c4257",
+      "batchId": "b8257d6b-ee19-4db1-b82d-afc042e3bf36",
+      "status": "succeeded",
+      "sequence": 0,
+      "errorCode": null,
+      "errorMessage": null,
+      "queuedAt": "2026-10-16T03:37:24.516Z",
+      "startedAt": "2026-10-16T03:37:25.203Z",
+      "finishedAt": "2026-10-16T03:37:55.856Z",
+      "modelName": "canvas-image",
+      "modelDisplayName": "AI生图 / 改图",
+      "image": {
+        "mediaId": "60da11e4-6e8b-4131-916c-4ae7e1352125",
+        "url": "/api/media/60da11e4-6e8b-4131-916c-4ae7e1352125",
+        "mimeType": "image/png",
+        "bytes": 1835765,
+        "width": 1086,
+        "height": 1448,
+        "isSaved": false
+      }
+    },
+    "imageSHA256": "a5acaa19f8a0fd57a8e9ec41ae65c3e753414fa9a202086b1a3bf5d7f4f5349e",
+    "canvasLog": {
+      "id": "23d10e6f-3bbd-4557-94ec-7eee0b703d79",
+      "task_id": "592015b9-caf4-4606-96c4-b7e5295c4257",
+      "gateway_request_id": "202610160337252254299028268d9d6S3ns5wrJ",
+      "upstream_request_id": null,
+      "gateway_evidence": {
+        "quota": null,
+        "status": "pending",
+        "checkedAt": "2026-10-16T03:37:25.217Z",
+        "requestId": null,
+        "providerName": null,
+        "quotaPerUnit": 500000,
+        "providerModel": null,
+        "supplierAmount": null,
+        "supplierCurrency": null,
+        "providerChannelId": null,
+        "supplierRequestId": null,
+        "supplierSettlementStatus": "pending_verification"
+      }
+    },
+    "newApi": {
+      "request_id": "202610160337252254299028268d9d6S3ns5wrJ",
+      "upstream_request_id": "202610160337260256513468268d9d6G9TEPdK2",
+      "channel": 2,
+      "model_name": "canvas-image",
+      "quota": 15000,
+      "created_at": 1792121875
+    },
+    "supplierBill": {
+      "requestId": "202610160337260256513468268d9d6G9TEPdK2",
+      "model": "gpt-image-2.5-flare",
+      "quota": 15000,
+      "accountDebitCNY": 0.03,
+      "source": "https://api.qidong.autos/api/log/token",
+      "cashPaidStatus": "unknown",
+      "snapshotSHA256": "49e4375106ad931db18cc76af1bcb47a42c3fb9bcc8cb3797dca893dca293582"
+    },
+    "supplierChargeInGatewayLog": {
+      "amount": "0.030000",
+      "cash_paid_status": "unknown",
+      "currency": "CNY",
+      "quota": 15000,
+      "quota_per_unit": 500000,
+      "request_id": "202610160337260256513468268d9d6G9TEPdK2",
+      "snapshot_sha256": "cc03c8d922c3f2dd7f8a43576a95cac56033b35496a5004996fa328d4907f2b7",
+      "source": "https://api.qidong.autos/api/log/token",
+      "status": "verified"
+    }
+  },
+  {
+    "operation": "multi-edit",
+    "taskId": "e0f68314-6372-4328-aa8e-7fdbf14653fa",
+    "batchId": "8c53e628-7400-442d-aa51-2a6b14de4cf6",
+    "referenceCount": 2,
+    "status": "succeeded",
+    "task": {
+      "id": "e0f68314-6372-4328-aa8e-7fdbf14653fa",
+      "batchId": "8c53e628-7400-442d-aa51-2a6b14de4cf6",
+      "status": "succeeded",
+      "sequence": 0,
+      "errorCode": null,
+      "errorMessage": null,
+      "queuedAt": "2026-10-16T03:37:57.617Z",
+      "startedAt": "2026-10-16T03:37:57.870Z",
+      "finishedAt": "2026-10-16T03:38:27.430Z",
+      "modelName": "canvas-image",
+      "modelDisplayName": "AI生图 / 改图",
+      "image": {
+        "mediaId": "98cb5b5a-feee-450d-a6cc-50c3926e6f77",
+        "url": "/api/media/98cb5b5a-feee-450d-a6cc-50c3926e6f77",
+        "mimeType": "image/png",
+        "bytes": 1905032,
+        "width": 1086,
+        "height": 1448,
+        "isSaved": false
+      }
+    },
+    "imageSHA256": "3974581691c8fb08d56c168bc62a9feecb93dcb5f1871c9a3f59b612158873d4",
+    "canvasLog": {
+      "id": "d6a8fa67-6518-4212-8c19-10d35c385885",
+      "task_id": "e0f68314-6372-4328-aa8e-7fdbf14653fa",
+      "gateway_request_id": "202610160337579096169088268d9d6IlpETkfz",
+      "upstream_request_id": null,
+      "gateway_evidence": {
+        "quota": null,
+        "status": "pending",
+        "checkedAt": "2026-10-16T03:37:57.902Z",
+        "requestId": null,
+        "providerName": null,
+        "quotaPerUnit": 500000,
+        "providerModel": null,
+        "supplierAmount": null,
+        "supplierCurrency": null,
+        "providerChannelId": null,
+        "supplierRequestId": null,
+        "supplierSettlementStatus": "pending_verification"
+      }
+    },
+    "newApi": {
+      "request_id": "202610160337579096169088268d9d6IlpETkfz",
+      "upstream_request_id": "202610160337588183490768268d9d6SaHkbygI",
+      "channel": 2,
+      "model_name": "canvas-image",
+      "quota": 15000,
+      "created_at": 1792121907
+    },
+    "supplierBill": {
+      "requestId": "202610160337588183490768268d9d6SaHkbygI",
+      "model": "gpt-image-2.5-flare",
+      "quota": 15000,
+      "accountDebitCNY": 0.03,
+      "source": "https://api.qidong.autos/api/log/token",
+      "cashPaidStatus": "unknown",
+      "snapshotSHA256": "d9b00b874330b8d1f12b85f7dfac041dc66d7d2b84868b751fa9201dee64556a"
+    },
+    "supplierChargeInGatewayLog": {
+      "amount": "0.030000",
+      "cash_paid_status": "unknown",
+      "currency": "CNY",
+      "quota": 15000,
+      "quota_per_unit": 500000,
+      "request_id": "202610160337588183490768268d9d6SaHkbygI",
+      "snapshot_sha256": "f80f6a79e1f41ec662c065fbff5cd3d870d9aa700f69c47edda7a8779627bb23",
+      "source": "https://api.qidong.autos/api/log/token",
+      "status": "verified"
+    }
+  }
+]

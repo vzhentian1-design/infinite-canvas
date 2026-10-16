@@ -1,0 +1,93 @@
+[
+  {
+    "task_id": "fe37e08a-7dbe-4121-a1f3-ae48c9434aa4",
+    "gateway_request_id": "202610160335456838414558268d9d6o54wkexm",
+    "upstream_request_id": null,
+    "gateway_evidence": {
+      "quota": null,
+      "status": "pending",
+      "checkedAt": "2026-10-16T03:43:17.451Z",
+      "requestId": "202610160335456838414558268d9d6o54wkexm",
+      "providerName": null,
+      "quotaPerUnit": 500000,
+      "providerModel": null,
+      "supplierAmount": null,
+      "supplierCurrency": null,
+      "providerChannelId": null,
+      "supplierRequestId": null,
+      "supplierSettlementStatus": "pending_verification"
+    }
+  },
+  {
+    "task_id": "013a7e35-561f-4e44-9f3c-ea8f1d10c640",
+    "gateway_request_id": "202610160336537090925178268d9d62OpsPuIg",
+    "upstream_request_id": "202610160336540916951168268d9d6NiRA4LyZ",
+    "gateway_evidence": {
+      "quota": 15000,
+      "status": "settled",
+      "checkedAt": "2026-10-16T03:37:47.429Z",
+      "requestId": "202610160336537090925178268d9d62OpsPuIg",
+      "providerName": "canvas-qidong-flare",
+      "quotaPerUnit": 500000,
+      "providerModel": "gpt-image-2.5-flare",
+      "supplierAmount": "0.030000",
+      "supplierCurrency": "CNY",
+      "supplierEvidence": {
+        "source": "https://api.qidong.autos/api/log/token",
+        "requestId": "202610160336540916951168268d9d6NiRA4LyZ",
+        "snapshotSha256": "51e29447e60d4704b2dc9f89d22e37324aa362eb0be456db39fa4fb08d8b187b"
+      },
+      "providerChannelId": 2,
+      "supplierRequestId": "202610160336540916951168268d9d6NiRA4LyZ",
+      "supplierSettlementStatus": "verified_account_debit"
+    }
+  },
+  {
+    "task_id": "592015b9-caf4-4606-96c4-b7e5295c4257",
+    "gateway_request_id": "202610160337252254299028268d9d6S3ns5wrJ",
+    "upstream_request_id": "202610160337260256513468268d9d6G9TEPdK2",
+    "gateway_evidence": {
+      "quota": 15000,
+      "status": "settled",
+      "checkedAt": "2026-10-16T03:38:17.429Z",
+      "requestId": "202610160337252254299028268d9d6S3ns5wrJ",
+      "providerName": "canvas-qidong-flare",
+      "quotaPerUnit": 500000,
+      "providerModel": "gpt-image-2.5-flare",
+      "supplierAmount": "0.030000",
+      "supplierCurrency": "CNY",
+      "supplierEvidence": {
+        "source": "https://api.qidong.autos/api/log/token",
+        "requestId": "202610160337260256513468268d9d6G9TEPdK2",
+        "snapshotSha256": "cc03c8d922c3f2dd7f8a43576a95cac56033b35496a5004996fa328d4907f2b7"
+      },
+      "providerChannelId": 2,
+      "supplierRequestId": "202610160337260256513468268d9d6G9TEPdK2",
+      "supplierSettlementStatus": "verified_account_debit"
+    }
+  },
+  {
+    "task_id": "e0f68314-6372-4328-aa8e-7fdbf14653fa",
+    "gateway_request_id": "202610160337579096169088268d9d6IlpETkfz",
+    "upstream_request_id": "202610160337588183490768268d9d6SaHkbygI",
+    "gateway_evidence": {
+      "quota": 15000,
+      "status": "settled",
+      "checkedAt": "2026-10-16T03:38:47.431Z",
+      "requestId": "202610160337579096169088268d9d6IlpETkfz",
+      "providerName": "canvas-qidong-flare",
+      "quotaPerUnit": 500000,
+      "providerModel": "gpt-image-2.5-flare",
+      "supplierAmount": "0.030000",
+      "supplierCurrency": "CNY",
+      "supplierEvidence": {
+        "source": "https://api.qidong.autos/api/log/token",
+        "requestId": "202610160337588183490768268d9d6SaHkbygI",
+        "snapshotSha256": "f80f6a79e1f41ec662c065fbff5cd3d870d9aa700f69c47edda7a8779627bb23"
+      },
+      "providerChannelId": 2,
+      "supplierRequestId": "202610160337588183490768268d9d6SaHkbygI",
+      "supplierSettlementStatus": "verified_account_debit"
+    }
+  }
+]

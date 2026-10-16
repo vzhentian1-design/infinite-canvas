@@ -138,7 +138,7 @@ function logDetail(log: RequestLog) {
         `New API 请求编号：${log.gatewayRequestId || "未记录"}`,
         ...(log.gatewayEvidence ? [
             `平台积分：${log.gatewayEvidence.status === "settled" ? log.gatewayEvidence.quota : "待结算"}（平台记账，不等于供应商现金成本）`,
-            `供应商账户扣费：${log.gatewayEvidence.supplierAmount ?? "待核实"} ${log.gatewayEvidence.supplierCurrency ?? ""}；充值现金折算仍未知`, 
+            `供应商账户扣费：${log.gatewayEvidence.supplierAmount ?? "待核实"} ${log.gatewayEvidence.supplierCurrency ?? ""}；充值现金折算仍未知`,
             `实际供应商：${log.gatewayEvidence.providerName || log.gatewayEvidence.providerChannelId || "待结算"}；实际模型：${log.gatewayEvidence.providerModel || "待结算"}`,
         ] : []),
         `供应商请求编号：${log.upstreamRequestId || "未记录"}`,
