@@ -1,0 +1,31 @@
+{
+  "status": "PROPOSED_NOT_APPROVED_NOT_EXECUTED",
+  "inferenceCallsThisRevision": 0,
+  "source": "Existing logged-in Packy consumption-log native response, previously captured 71-row sample",
+  "classificationFields": ["model_name", "other.request_path"],
+  "reusedPackyOperationCounts": [
+    {"model": "gpt-image-2.5-flare", "path": "/v1/images/generations", "rows": 1},
+    {"model": "gpt-image-2.5-sunburst", "path": "/v1/images/edits", "rows": 35}
+  ],
+  "evidenceLimits": [
+    "Historical consumption proves historical provider operation usage, not fresh gateway image output or quality",
+    "No unique request IDs in the sample; individual current-task supplier debit remains pending verification",
+    "Packy Sunburst fresh gateway generation is not independently retested"
+  ],
+  "reusedQidongEvidence": [
+    "Flare real gateway generation, single-reference edit and dual-reference edit, each linked CNY 0.03",
+    "Sunburst pre-existing generation consumption record"
+  ],
+  "minimumProposedRealSupplierSends": 2,
+  "operations": [
+    {"supplier": "qidong", "model": "gpt-image-2.5-sunburst", "path": "/v1/images/edits", "references": 1, "realSupplierRetries": 0},
+    {"supplier": "Packy", "model": "gpt-image-2.5-flare", "path": "/v1/images/edits", "references": 1, "primary": "Local synthetic pre-send failure, no Qidong contact", "realSupplierRetries": 0}
+  ],
+  "firstFailureOrUnknownImageResultStopsRemainingSends": true,
+  "multiReferencePaidRetests": 0,
+  "paidRecoveryProbes": 0,
+  "PackySunburstAdditionalPaidCalls": 0,
+  "budgetProposal": {"CNY": "0.03", "USD": "3.56", "USDIsPublicRangeReserveNotHardCap": true, "automaticTopUp": false},
+  "productionChanged": false,
+  "existingHistoricalBillsPreserved": 400
+}

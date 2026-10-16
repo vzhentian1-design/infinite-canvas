@@ -80,16 +80,21 @@
     "originalGatewayRateLimitsPreserved": true
   },
   "proposedPaidAcceptance": {
-    "maximumSupplierCalls": 3,
+    "maximumSupplierCalls": 2,
     "operations": [
-      "qidong Sunburst two-reference edit",
-      "Packy Flare two-reference edit",
-      "Packy Sunburst two-reference edit"
+      "qidong Sunburst single-reference edit; real supplier retries disabled",
+      "Packy Flare single-reference edit after local fake primary pre-send failure; only Packy contacted"
     ],
     "existingGenerationEvidenceReused": true,
     "qidongBudgetCNY": "0.03",
-    "PackyExpectedUSD": "0.10-0.30",
-    "PackyConservativePublicRangeReserveUSD": "7.12",
+    "PackyExpectedUSD": null,
+    "PackyConservativePublicRangeReserveUSD": "3.56",
+    "maximumBusinessTasks": 2,
+    "primaryFailureIsSimulated": true,
+    "PackySunburstExistingEditRecordsReused": 35,
+    "multiReferencePaidRetestRequired": false,
+    "PackySunburstFreshGatewayGenerationNotRetested": true,
+    "insufficientBalanceOrBudgetStopsBeforeSending": true,
     "hardSingleRequestSpendCapVerified": false,
     "automaticPaidRetries": 0,
     "automaticTopUp": false,
