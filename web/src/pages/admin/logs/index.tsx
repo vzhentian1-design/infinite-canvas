@@ -138,8 +138,15 @@ function logDetail(log: RequestLog) {
         `New API 请求编号：${log.gatewayRequestId || "未记录"}`,
         ...(log.gatewayEvidence ? [
             `平台积分：${log.gatewayEvidence.status === "settled" ? log.gatewayEvidence.quota : "待结算"}（平台记账，不等于供应商现金成本）`,
-            `供应商账户扣费：${log.gatewayEvidence.supplierAmount ?? "待核实"} ${log.gatewayEvidence.supplierCurrency ?? ""}；充值现金折算仍未知`,
+            `最后一次供应商账户扣费：${log.gatewayEvidence.supplierAmount ?? "待核实"} ${log.gatewayEvidence.supplierCurrency ?? ""}；充值现金折算仍未知`,
             `实际供应商：${log.gatewayEvidence.providerName || log.gatewayEvidence.providerChannelId || "待结算"}；实际模型：${log.gatewayEvidence.providerModel || "待结算"}`,
+            ...(log.gatewayEvidence.attempts || []).flatMap(attempt => [
+                `\n第 ${attempt.attempt} 次供应商尝试：${attempt.providerName || "待核实"} / ${attempt.providerModel || "待核实"}`,
+                `结果：${({ succeeded: "成功", failed: "已知失败", unknown: "结果未知，可能仍出图并扣费" })[attempt.status]}；HTTP ${attempt.httpStatus ?? "未知"}${attempt.errorCode ? `；${attempt.errorCode}` : ""}`,
+                `供应商请求编号：${attempt.supplierRequestId || "未返回"}；New API积分：${attempt.quota ?? "待核实"}`,
+                `供应商费用估算：${attempt.estimate ? `${attempt.estimate.currency} ${attempt.estimate.amount ?? `${attempt.estimate.min || "未知"}–${attempt.estimate.max || "未知"}（公开区间，非硬上限）`}；来源 ${attempt.estimate.source}` : "待核实"}`,
+                `可核实账户扣费：${attempt.supplierAmount === null ? "待核实" : `${attempt.supplierCurrency} ${attempt.supplierAmount}`}`,
+            ]),
         ] : []),
         `供应商请求编号：${log.upstreamRequestId || "未记录"}`,
         `HTTP：${log.httpStatus ?? "—"}`,

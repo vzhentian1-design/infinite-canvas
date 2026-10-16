@@ -1,0 +1,109 @@
+{
+  "status": "CANDIDATE_NOT_DEPLOYED_AWAITING_OWNER",
+  "employeeModels": [
+    {
+      "name": "canvas-image",
+      "label": "GPT Image 2.5 Flare",
+      "default": true,
+      "providerModel": "gpt-image-2.5-flare"
+    },
+    {
+      "name": "canvas-image-sunburst",
+      "label": "GPT Image 2.5 Sunburst",
+      "default": false,
+      "providerModel": "gpt-image-2.5-sunburst"
+    }
+  ],
+  "routingOwner": "New API only",
+  "canvasPaidAttempts": 1,
+  "maxSupplierAttempts": 2,
+  "variantsMaySubstitute": false,
+  "primary": {
+    "supplier": "qidong",
+    "priority": 100,
+    "timeoutSeconds": 180,
+    "billing": {
+      "currency": "CNY",
+      "perImage": "0.030000"
+    }
+  },
+  "backup": {
+    "supplier": "Packy",
+    "priority": 10,
+    "timeoutSeconds": 240,
+    "quality": "low",
+    "billing": {
+      "currency": "USD",
+      "basis": "usage dependent",
+      "modelRatio": 2.5,
+      "completionRatio": 6,
+      "imageRatio": 1.6,
+      "supplierGroupRatio": 5,
+      "publicRangeMin": "0.029400",
+      "publicRangeMax": "3.557850",
+      "hardPerRequestCapVerified": false
+    }
+  },
+  "existingCanvasGatewayTimeoutSeconds": 480,
+  "cooldownSeconds": {
+    "flare": 300,
+    "sunburst": 300
+  },
+  "recovery": "next real request probes same variant; only success confirms healthy",
+  "unknownResultFailover": {
+    "optIn": true,
+    "classes": [
+      "5xx",
+      "408",
+      "429",
+      "transport timeout",
+      "disconnect"
+    ],
+    "firstQueryOriginalReceiptWhenIdAvailable": true,
+    "stopIfOriginalCharged": true,
+    "duplicateChargePossible": true
+  },
+  "neverBlindlyFailover": [
+    "content or safety refusal",
+    "400",
+    "403",
+    "422",
+    "response already written",
+    "caller cancelled",
+    "already tried Packy"
+  ],
+  "settlement": {
+    "batchMax": 25,
+    "pollSeconds": 120,
+    "lateBillRecheckSeconds": 300,
+    "lookbackDays": 7,
+    "originalGatewayRateLimitsPreserved": true
+  },
+  "proposedPaidAcceptance": {
+    "maximumSupplierCalls": 3,
+    "operations": [
+      "qidong Sunburst two-reference edit",
+      "Packy Flare two-reference edit",
+      "Packy Sunburst two-reference edit"
+    ],
+    "existingGenerationEvidenceReused": true,
+    "qidongBudgetCNY": "0.03",
+    "PackyExpectedUSD": "0.10-0.30",
+    "PackyConservativePublicRangeReserveUSD": "7.12",
+    "hardSingleRequestSpendCapVerified": false,
+    "stopOnFirstFailureOrUnknownCharge": true,
+    "automaticPaidRetries": 0,
+    "automaticTopUp": false,
+    "usesExistingBalanceOnly": true
+  },
+  "remainingLimitations": [
+    "Packy token log GET returns record not found",
+    "Packy logged-in consumption rows do not expose request IDs",
+    "Packy true per-attempt debit remains pending verification until unique evidence exists"
+  ],
+  "requestRiskReserve": {
+    "CNY": "0.030000",
+    "USD": "3.557850",
+    "hardSupplierSpendCapVerified": false
+  }
+}

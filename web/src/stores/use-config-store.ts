@@ -79,8 +79,8 @@ export type ChannelCredentialsImportResult = {
 };
 
 export const CONFIG_STORE_KEY = "infinite-canvas:ai_config_store";
-export const EMPLOYEE_PRESET_VERSION = 1;
-export const EMPLOYEE_DEFAULT_IMAGE_MODEL = "gpt-image-2-qidong";
+export const EMPLOYEE_PRESET_VERSION = 2;
+export const EMPLOYEE_DEFAULT_IMAGE_MODEL = "canvas-image";
 const CHANNEL_MODEL_SEPARATOR = "::";
 const PLATFORM_CHANNEL_ID = "platform";
 const OPENAI_BASE_URL = "https://api.openai.com";

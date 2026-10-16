@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import {sqlClient as sql,closeDatabase} from '/app/dist/db/client.js';
+import {encryptSecret} from '/app/dist/crypto.js';
+import {syncNewApiSettlements} from '/candidate/newapi-settlement.js';
+import {parseNewApiEvidence} from '/candidate/newapi-evidence.js';
+await sql.unsafe('create table if not exists channels(id uuid primary key,base_url text,encrypted_api_key text); create table if not exists request_logs(id uuid primary key,channel_id uuid,started_at timestamptz,gateway_request_id varchar(64),gateway_evidence jsonb,upstream_request_id text); truncate request_logs,channels');
+const channel='10000000-0000-4000-8000-000000000001';
+await sql`insert into channels values(${channel},'http://synthetic-gateway/v1',${encryptSecret('synthetic-only')})`;
+const old=new Date(Date.now()-3600000).toISOString();
+const prior=parseNewApiEvidence('late',[{request_id:'late',type:2,quota:15000,upstream_request_id:'qidong-late',other:JSON.stringify({image_supplier:'canvas-qidong-flare',upstream_model_name:'gpt-image-2.5-flare'})}]);prior.checkedAt=old;
+await sql`insert into request_logs values('20000000-0000-4000-8000-000000000001',${channel},now(),'pending',${JSON.stringify({status:'pending'})}::jsonb,null),('20000000-0000-4000-8000-000000000002',${channel},now(),'late',${JSON.stringify(prior)}::jsonb,'qidong-late')`;
+let lookups=0;
+globalThis.fetch=async(url,init)=>{
+  assert.equal(url.origin,'http://synthetic-gateway');assert.equal(url.pathname,'/api/log/token');assert.equal(init.headers.Authorization,'Bearer synthetic-only');
+  assert.deepEqual(url.searchParams.getAll('request_id').sort(),['late','pending']);lookups++;
+  return new Response(JSON.stringify({success:true,data:[{request_id:'pending',type:2,quota:15000,upstream_request_id:'qidong-new',other:'{}'},{request_id:'late',type:2,quota:15000,upstream_request_id:'qidong-late',other:JSON.stringify({image_supplier:'canvas-qidong-flare',upstream_model_name:'gpt-image-2.5-flare',supplier_charge:{status:'verified',request_id:'qidong-late',model:'gpt-image-2.5-flare',currency:'CNY',amount:'0.030000',source:'https://api.qidong.autos/api/log/token',snapshot_sha256:'a'.repeat(64)}})}]}));
+};
+await syncNewApiSettlements();
+assert.equal(lookups,1);
+const rows=await sql`select gateway_request_id,gateway_evidence from request_logs order by gateway_request_id`;
+assert.equal(rows[0].gateway_evidence.supplierAmount,'0.030000');assert.equal(rows[1].gateway_evidence.quota,15000);
+await syncNewApiSettlements();assert.equal(lookups,1,'a settled snapshot must not accumulate or be polled immediately');
+console.log(JSON.stringify({PASS:true,engine:'real PostgreSQL',batchRequests:1,updatedRows:2,lateReceiptVerified:true,immediateRepeatSuppressed:true,inferenceCalls:0}));
+await closeDatabase();

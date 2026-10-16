@@ -1,0 +1,661 @@
+{
+  "at": "2026-10-16T04:42:10.364336+00:00",
+  "inferenceCalls": 0,
+  "checks": [
+    {
+      "supplier": "qidong",
+      "url": "https://api.qidong.autos/v1/models",
+      "http": 200,
+      "sha256": "795335531c234bdd6fc754215a4adf653a9ac9b6df87955f174a5c05b239d7d8",
+      "success": true,
+      "message": "",
+      "models": [
+        {
+          "id": "gemini-3-pro-image",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "google gemini",
+          "supported_endpoint_types": [
+            "image-generation",
+            "gemini",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gemini-3-pro-image-preview",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "google gemini",
+          "supported_endpoint_types": [
+            "image-generation",
+            "gemini",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gemini-3.1-flash-image",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "google gemini",
+          "supported_endpoint_types": [
+            "image-generation",
+            "gemini",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gemini-3.1-flash-image-preview",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "google gemini",
+          "supported_endpoint_types": [
+            "image-generation",
+            "gemini",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gpt-image-2",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "openai",
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gpt-image-2-qidong",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "openai",
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gpt-image-2.5",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "openai",
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gpt-image-2.5-flare",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "openai",
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gpt-image-2.5-qidong",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "openai",
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "gpt-image-2.5-sunburst",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "openai",
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        },
+        {
+          "id": "grok-imagine-image",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "openai",
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ]
+        }
+      ]
+    },
+    {
+      "supplier": "qidong",
+      "url": "https://api.qidong.autos/api/pricing",
+      "http": 200,
+      "sha256": "6f86c5176cf997e08513a2de0a1ba7d1aec7e96aa6a98aeb1fd4389cccef1356",
+      "success": true,
+      "message": "",
+      "prices": [
+        {
+          "model_name": "gpt-image-2",
+          "description": "云飞生图；1K 分组，最高 1K；按张计费；支持文生图与参考图编辑。",
+          "icon": "OpenAI",
+          "tags": "图片,云飞生图,按张计费",
+          "quota_type": 1,
+          "model_ratio": 0,
+          "model_price": 0.072,
+          "owner_by": "",
+          "completion_ratio": 0,
+          "enable_groups": [
+            "代理",
+            "生图"
+          ],
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ],
+          "modality": "image",
+          "input_types": [
+            "text",
+            "image"
+          ],
+          "resolutions": [
+            "1k"
+          ],
+          "supports_references": true,
+          "billing_mode": "per_image",
+          "request_unit": "image"
+        },
+        {
+          "model_name": "gpt-image-2.5-qidong",
+          "description": "云飞生图；1K 分组，最高 1K；按张计费；支持文生图与参考图编辑。",
+          "icon": "OpenAI",
+          "tags": "图片,云飞生图,按张计费",
+          "quota_type": 1,
+          "model_ratio": 0,
+          "model_price": 0.06,
+          "owner_by": "",
+          "completion_ratio": 0,
+          "enable_groups": [
+            "代理",
+            "生图"
+          ],
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ],
+          "modality": "image",
+          "input_types": [
+            "text",
+            "image"
+          ],
+          "resolutions": [
+            "1k"
+          ],
+          "supports_references": true,
+          "billing_mode": "per_image",
+          "request_unit": "image"
+        },
+        {
+          "model_name": "gpt-image-2-qidong",
+          "description": "云飞生图；1K 分组，最高 1K；按张计费；支持文生图与参考图编辑。",
+          "icon": "OpenAI",
+          "tags": "图片,云飞生图,按张计费",
+          "quota_type": 1,
+          "model_ratio": 0,
+          "model_price": 0.06,
+          "owner_by": "",
+          "completion_ratio": 0,
+          "enable_groups": [
+            "代理",
+            "生图"
+          ],
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ],
+          "modality": "image",
+          "input_types": [
+            "text",
+            "image"
+          ],
+          "resolutions": [
+            "1k"
+          ],
+          "supports_references": true,
+          "billing_mode": "per_image",
+          "request_unit": "image"
+        },
+        {
+          "model_name": "gpt-image-2.5-sunburst",
+          "description": "云飞生图；1K 分组，最高 1K；按张计费；支持文生图与参考图编辑。",
+          "icon": "OpenAI",
+          "tags": "图片,云飞生图,按张计费",
+          "quota_type": 1,
+          "model_ratio": 0,
+          "model_price": 0.03,
+          "owner_by": "",
+          "completion_ratio": 0,
+          "enable_groups": [
+            "代理",
+            "生图"
+          ],
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ],
+          "modality": "image",
+          "input_types": [
+            "text",
+            "image"
+          ],
+          "resolutions": [
+            "1k"
+          ],
+          "supports_references": true,
+          "billing_mode": "per_image",
+          "request_unit": "image"
+        },
+        {
+          "model_name": "gpt-image-2.5-flare",
+          "description": "云飞生图；1K 分组，最高 1K；按张计费；支持文生图与参考图编辑。",
+          "icon": "OpenAI",
+          "tags": "图片,云飞生图,按张计费",
+          "quota_type": 1,
+          "model_ratio": 0,
+          "model_price": 0.03,
+          "owner_by": "",
+          "completion_ratio": 0,
+          "enable_groups": [
+            "代理",
+            "生图"
+          ],
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ],
+          "modality": "image",
+          "input_types": [
+            "text",
+            "image"
+          ],
+          "resolutions": [
+            "1k"
+          ],
+          "supports_references": true,
+          "billing_mode": "per_image",
+          "request_unit": "image"
+        },
+        {
+          "model_name": "gpt-image-2.5",
+          "description": "云飞生图；1K 分组，最高 1K；按张计费；支持文生图与参考图编辑。",
+          "icon": "OpenAI",
+          "tags": "图片,云飞生图,按张计费",
+          "quota_type": 1,
+          "model_ratio": 0,
+          "model_price": 0.03,
+          "owner_by": "",
+          "completion_ratio": 0,
+          "enable_groups": [
+            "代理",
+            "生图"
+          ],
+          "supported_endpoint_types": [
+            "image-generation",
+            "openai",
+            "image-edit"
+          ],
+          "media_kind": "image",
+          "media_kinds": [
+            "image"
+          ],
+          "modality": "image",
+          "input_types": [
+            "text",
+            "image"
+          ],
+          "resolutions": [
+            "1k"
+          ],
+          "supports_references": true,
+          "billing_mode": "per_image",
+          "request_unit": "image"
+        }
+      ],
+      "group_ratio": {
+        "万相": 1,
+        "官转": 1,
+        "新渠道2": 1,
+        "测试": 1,
+        "海外": 1,
+        "满血快速2.5高价组": 1,
+        "生图": 1
+      },
+      "supported_endpoint": {
+        "gemini": {
+          "path": "/v1beta/models/{model}:generateContent",
+          "method": "POST"
+        },
+        "image-edit": {
+          "path": "/v1/images/edits",
+          "method": "POST"
+        },
+        "image-generation": {
+          "path": "/v1/images/generations",
+          "method": "POST"
+        },
+        "openai": {
+          "path": "/v1/chat/completions",
+          "method": "POST"
+        },
+        "openai-video": {
+          "path": "/v1/video/generations",
+          "method": "POST"
+        }
+      }
+    },
+    {
+      "supplier": "Packy",
+      "url": "https://cf.api.fan/v1/models",
+      "http": 200,
+      "sha256": "05736f6548e400e276e2e6fe417c640150e23d412a02053855f88de683cf9391",
+      "success": true,
+      "message": "",
+      "models": [
+        {
+          "id": "gpt-image-2.5-flare",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "apimart",
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        },
+        {
+          "id": "gpt-image-2",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "apimart",
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        },
+        {
+          "id": "gpt-image-2.5-sunburst",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "apimart",
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        }
+      ]
+    },
+    {
+      "supplier": "Packy",
+      "url": "https://cf.api.fan/api/pricing",
+      "http": 404
+    },
+    {
+      "supplier": "Packy",
+      "url": "https://www.packyapi.com/v1/models",
+      "http": 200,
+      "sha256": "05736f6548e400e276e2e6fe417c640150e23d412a02053855f88de683cf9391",
+      "success": true,
+      "message": "",
+      "models": [
+        {
+          "id": "gpt-image-2.5-flare",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "apimart",
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        },
+        {
+          "id": "gpt-image-2",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "apimart",
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        },
+        {
+          "id": "gpt-image-2.5-sunburst",
+          "object": "model",
+          "created": 1626777600,
+          "owned_by": "apimart",
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        }
+      ]
+    },
+    {
+      "supplier": "Packy",
+      "url": "https://www.packyapi.com/api/pricing",
+      "http": 200,
+      "sha256": "3238fa3461acdb7b3635d79e8a7b17e9457940da548fbf2729df70862eec5f26",
+      "success": true,
+      "message": "",
+      "prices": [
+        {
+          "model_name": "gpt-image-2.5-flare",
+          "vendor_id": 2,
+          "quota_type": 1,
+          "model_ratio": 2.5,
+          "model_price": 0.08,
+          "model_price_min": 0.00588,
+          "model_price_max": 0.71157,
+          "owner_by": "",
+          "completion_ratio": 6,
+          "image_ratio": 1.6,
+          "enable_groups": [
+            "image"
+          ],
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        },
+        {
+          "model_name": "gpt-image-2.5-sunburst",
+          "vendor_id": 2,
+          "quota_type": 1,
+          "model_ratio": 2.5,
+          "model_price": 0.08,
+          "model_price_min": 0.00588,
+          "model_price_max": 0.71157,
+          "owner_by": "",
+          "completion_ratio": 6,
+          "image_ratio": 1.6,
+          "enable_groups": [
+            "image"
+          ],
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        },
+        {
+          "model_name": "gpt-image-2",
+          "vendor_id": 2,
+          "quota_type": 1,
+          "model_ratio": 2.5,
+          "model_price": 0.08,
+          "model_price_min": 0.00588,
+          "model_price_max": 0.71157,
+          "owner_by": "",
+          "completion_ratio": 6,
+          "image_ratio": 1.6,
+          "enable_groups": [
+            "image"
+          ],
+          "supported_endpoint_types": [
+            "image-generation"
+          ]
+        }
+      ],
+      "group_ratio": {
+        "azure-officially": 5,
+        "bailian": 0.5,
+        "cc": 2.5,
+        "cc-expensive": 3.5,
+        "cc-sale": 0.8,
+        "claude-officially": 7,
+        "codex": 0.8,
+        "codex-sale": 0.5,
+        "deepseek-officially": 1,
+        "deepseek-sale": 0.5,
+        "gemini-slb": 3,
+        "glm-sale": 1,
+        "grok-officially": 2.5,
+        "grok-sale": 0.3,
+        "image": 5,
+        "kimi-officially": 0.95,
+        "kimi-sale": 0.5,
+        "mimo-officially": 0.8,
+        "minimax-officially": 0.5,
+        "typesafe-officially": 3,
+        "video": 1,
+        "zai-officially": 1
+      },
+      "supported_endpoint": {
+        "anthropic": {
+          "path": "/v1/messages",
+          "method": "POST"
+        },
+        "gemini": {
+          "path": "/v1beta/models/{model}:generateContent",
+          "method": "POST"
+        },
+        "image-generation": {
+          "path": "/v1/images/generations",
+          "method": "POST",
+          "extra_paths": [
+            "/v1/images/edits"
+          ]
+        },
+        "minimax-context-ir": {
+          "path": "/v2/h3_context_ir",
+          "method": "POST"
+        },
+        "minimax-video": {
+          "path": "/v2/video_generation",
+          "method": "POST"
+        },
+        "minimax-video-regeneration": {
+          "path": "/v2/video_regeneration",
+          "method": "POST"
+        },
+        "openai": {
+          "path": "/v1/chat/completions",
+          "method": "POST"
+        },
+        "openai-response": {
+          "path": "/v1/responses",
+          "method": "POST"
+        },
+        "systemone": {
+          "path": "/v1/systemone",
+          "method": "POST"
+        }
+      }
+    }
+  ],
+  "packyBilling": {
+    "tokenLog": "success=false / record not found",
+    "browserPath": "/api/log/self",
+    "recordCount": 71,
+    "gptImage25RecordCount": 36,
+    "hasRequestId": false,
+    "hasUpstreamRequestId": false,
+    "sourceFields": [
+      "id",
+      "model_name",
+      "quota",
+      "prompt_tokens",
+      "completion_tokens",
+      "other",
+      "profile"
+    ],
+    "withNestedRequestIdentity": 0
+  }
+}

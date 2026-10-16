@@ -1,0 +1,22 @@
+{
+  "images": {
+    "api": {
+      "tag": "infinite-canvas-api:autofailover-candidate-20261016",
+      "id": "sha256:b0ad358fb014f5a055f9492484d5051366bf0ca1405ade352df6285f3b812283"
+    },
+    "web": {
+      "tag": "infinite-canvas:autofailover-candidate-20261016",
+      "id": "sha256:8823808ae9ec6e1c6d37f5d9363a4e9fdfcc9e53c313a293cb7ae85d37d719db"
+    },
+    "gateway": {
+      "tag": "new-api:canvas-autofailover-candidate",
+      "id": "sha256:2b7ac28dafb9699f64218073cb7c920cf9587ae8541f14206f5946bb60af29f9"
+    }
+  },
+  "deployed": false,
+  "gatewayBinarySha256": "81ce48c22626218c41eb38ae91ca5dc4e4f884d359c325566dfd6536ea24325a",
+  "canvasApiFilesReplaced": [
+    "newapi-evidence.js",
+    "newapi-settlement.js"
+  ]
+}
